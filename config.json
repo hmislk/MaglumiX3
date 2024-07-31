@@ -10,7 +10,7 @@
       "socketCommunicationType": "Server"
     },
     "limsSettings": {
-      "pullSampleDataEndpoint": "http://example.com/api/pullSampleData",
+      "pullSampleDataEndpoint": "http://172.16.222.100:8080/ruhunuDev/api/middleware/pullSampleData/",
       "pushSampleAcceptanceEndpoint": "http://example.com/api/pushSampleAcceptance",
       "pushResultsEndpoint": "http://example.com/api/pushResults",
       "pullResultsEndpoint": "http://example.com/api/pullResults",
@@ -21,7 +21,7 @@
     "tcpipSettings": {
       "socketCommunicationType": "Server",
       "analyzerAddress": "192.168.1.100",
-      "middlewareAddress": "192.168.1.101",
+      "middlewareAddress": "172.16.241.70",
       "analyzerPort": 1234,
       "middlewarePort": 5678
     },

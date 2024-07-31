@@ -17,6 +17,8 @@ public class LISCommunicator {
             JsonObject limsSettings = SettingsLoader.settings.getAsJsonObject("middlewareSettings").getAsJsonObject("limsSettings");
             String pullSampleDataEndpoint = limsSettings.get("pullSampleDataEndpoint").getAsString();
 
+            System.out.println("Making GET request to: " + pullSampleDataEndpoint);
+
             URL url = new URL(pullSampleDataEndpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("GET");
@@ -24,6 +26,8 @@ public class LISCommunicator {
             conn.setRequestProperty("Accept", "application/json");
 
             int responseCode = conn.getResponseCode();
+            System.out.println("Response Code: " + responseCode);
+
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
                 String inputLine;
@@ -36,7 +40,11 @@ public class LISCommunicator {
 
                 // Process the response
                 JsonObject responseObject = JsonParser.parseString(response.toString()).getAsJsonObject();
-                handleSampleData(responseObject);
+                System.out.println("Response: " + responseObject.toString());
+
+                if (false) {
+                    handleSampleData(responseObject);
+                }
             } else {
                 System.out.println("GET request failed");
             }
