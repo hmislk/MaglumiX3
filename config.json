@@ -1,0 +1,38 @@
+{
+  "middlewareSettings": {
+    "analyzerDetails": {
+      "analyzerName": "IndikoPlus",
+      "serialNumber": "12345-67890",
+      "analyzerId": "yourAnalyzerId",
+      "analyzerIP": "192.168.1.100",
+      "analyzerPort": 1234,
+      "communicationType": "TCP/IP",
+      "socketCommunicationType": "Server"
+    },
+    "limsSettings": {
+      "pullSampleDataEndpoint": "http://example.com/api/pullSampleData",
+      "pushSampleAcceptanceEndpoint": "http://example.com/api/pushSampleAcceptance",
+      "pushResultsEndpoint": "http://example.com/api/pushResults",
+      "pullResultsEndpoint": "http://example.com/api/pullResults",
+      "username": "yourUsername",
+      "password": "yourPassword",
+      "departmentId": "yourDepartmentId"
+    },
+    "tcpipSettings": {
+      "socketCommunicationType": "Server",
+      "analyzerAddress": "192.168.1.100",
+      "middlewareAddress": "192.168.1.101",
+      "analyzerPort": 1234,
+      "middlewarePort": 5678
+    },
+    "communicationSettings": {
+      "resultSendingCriteria": "Sample",
+      "automaticResultSending": "Yes",
+      "hostQueryInUse": "Yes",
+      "multipleHostQuery": "No",
+      "sampleIdSendingDelay": "0",
+      "resultSendingDelay": "0",
+      "qcResultSendingInUse": "Yes"
+    }
+  }
+}

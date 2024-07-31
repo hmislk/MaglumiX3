@@ -1,4 +1,4 @@
-package org.carecode.mw.lims.mw.maglumix3;
+package org.carecode.mw.lims.mw.indiko;
 
 import java.io.FileReader;
 import java.io.IOException;
