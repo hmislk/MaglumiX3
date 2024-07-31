@@ -10,9 +10,9 @@ public class AnalyzerCommunicator {
 
     public static void sendRequestToAnalyzer(String sampleId, JsonArray tests) {
         try {
-            JsonObject analyzerSettings = SettingsLoader.settings.getAsJsonObject("middlewareSettings").getAsJsonObject("analyzerDetails");
-            String analyzerIP = analyzerSettings.get("analyzerIP").getAsString();
-            int analyzerPort = analyzerSettings.get("analyzerPort").getAsInt();
+            JsonObject tcpipSettings = SettingsLoader.settings.getAsJsonObject("middlewareSettings").getAsJsonObject("tcpipSettings");
+            String analyzerIP = tcpipSettings.get("analyzerAddress").getAsString();
+            int analyzerPort = tcpipSettings.get("analyzerPort").getAsInt();
 
             Socket socket = new Socket(analyzerIP, analyzerPort);
             OutputStream out = socket.getOutputStream();
