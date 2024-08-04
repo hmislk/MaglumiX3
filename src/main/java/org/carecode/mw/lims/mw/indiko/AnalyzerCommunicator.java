@@ -1,58 +1,92 @@
 package org.carecode.mw.lims.mw.indiko;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
 public class AnalyzerCommunicator {
 
-    public static void sendRequestToAnalyzer(String sampleId, JsonArray tests) {
-        try {
-            JsonObject tcpipSettings = SettingsLoader.settings.getAsJsonObject("middlewareSettings").getAsJsonObject("tcpipSettings");
-            String analyzerIP = tcpipSettings.get("analyzerAddress").getAsString();
-            int analyzerPort = tcpipSettings.get("analyzerPort").getAsInt();
+    private static final char ENQ = 0x05; // Enquiry
+    private static final char ACK = 0x06; // Acknowledgement
+    private static final char EOT = 0x04; // End of Transmission
+    private static final char STX = 0x02; // Start of Text
+    private static final char ETX = 0x03; // End of Text
 
-            Socket socket = new Socket(analyzerIP, analyzerPort);
-            OutputStream out = socket.getOutputStream();
+    public static void startServer() {
+        JsonObject tcpipSettings = SettingsLoader.settings.getAsJsonObject("middlewareSettings").getAsJsonObject("tcpipSettings");
+        int middlewarePort = tcpipSettings.get("middlewarePort").getAsInt();
 
-            JsonObject request = new JsonObject();
-            request.addProperty("sampleId", sampleId);
-            request.add("tests", tests);
-
-            out.write(request.toString().getBytes());
-            out.flush();
-            socket.close();
+        try (ServerSocket serverSocket = new ServerSocket(middlewarePort)) {
+            System.out.println("Server started, listening on port: " + middlewarePort);
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                new Thread(new ClientHandler(clientSocket)).start();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    public static JsonObject getResultsFromAnalyzer() {
-        // Implement the logic to retrieve results from the analyzer
-        // This is a placeholder implementation and needs to be replaced with actual logic
-        JsonObject results = new JsonObject();
-        JsonArray sampleResults = new JsonArray();
+    private static class ClientHandler implements Runnable {
+        private final Socket clientSocket;
 
-        JsonObject sample1 = new JsonObject();
-        sample1.addProperty("sampleId", "sample1");
-        JsonObject testResults1 = new JsonObject();
-        testResults1.addProperty("test1", "result1");
-        testResults1.addProperty("test2", "result2");
-        sample1.add("results", testResults1);
+        public ClientHandler(Socket socket) {
+            this.clientSocket = socket;
+        }
 
-        JsonObject sample2 = new JsonObject();
-        sample2.addProperty("sampleId", "sample2");
-        JsonObject testResults2 = new JsonObject();
-        testResults2.addProperty("test1", "result3");
-        testResults2.addProperty("test2", "result4");
-        sample2.add("results", testResults2);
+        @Override
+        public void run() {
+            try (BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                 OutputStream out = clientSocket.getOutputStream()) {
+                StringBuilder messageBuffer = new StringBuilder();
+                int charRead;
+                while ((charRead = in.read()) != -1) {
+                    char receivedChar = (char) charRead;
+                    if (receivedChar == ENQ) {
+                        // Respond with ACK
+                        out.write(ACK);
+                        out.flush();
+                        System.out.println("Received ENQ, sent ACK");
+                    } else if (receivedChar == EOT) {
+                        // End of transmission, process message but keep connection open
+                        String message = messageBuffer.toString();
+                        System.out.println("Received message: " + message);
+                        handleMessage(message, out);
+                        messageBuffer.setLength(0); // Clear the buffer
+                    } else {
+                        // Append received character to buffer
+                        messageBuffer.append(receivedChar);
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                try {
+                    clientSocket.close();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
 
-        sampleResults.add(sample1);
-        sampleResults.add(sample2);
+    private static void handleMessage(String message, OutputStream out) {
+        try {
+            // Process message and determine appropriate response
+            // For demonstration, just sending ACK after processing the message
+            // In a real implementation, you might need to parse and handle the message appropriately
 
-        results.add("samples", sampleResults);
-        return results;
+            // Send ACK after processing the message
+            out.write(ACK);
+            out.flush();
+            System.out.println("Sent ACK after processing message");
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }

@@ -3,27 +3,27 @@
     "analyzerDetails": {
       "analyzerName": "IndikoPlus",
       "serialNumber": "12345-67890",
-      "analyzerId": "yourAnalyzerId",
-      "analyzerIP": "192.168.1.100",
+      "analyzerId": "1",
+      "analyzerIP": "172.16.241.71",
       "analyzerPort": 1234,
       "communicationType": "TCP/IP",
       "socketCommunicationType": "Server"
     },
     "limsSettings": {
       "pullSampleDataEndpoint": "http://172.16.222.100:8080/ruhunuDev/api/middleware/pullSampleData/",
-      "pushSampleAcceptanceEndpoint": "http://example.com/api/pushSampleAcceptance",
-      "pushResultsEndpoint": "http://example.com/api/pushResults",
-      "pullResultsEndpoint": "http://example.com/api/pullResults",
-      "username": "yourUsername",
-      "password": "yourPassword",
-      "departmentId": "yourDepartmentId"
+      "pushSampleAcceptanceEndpoint": "http://172.16.222.100:8080/ruhunuDev/api/middleware/pushSampleAcceptance",
+      "pushResultsEndpoint": "http://172.16.222.100:8080/ruhunuDev/api/middleware/pushResults",
+      "pullResultsEndpoint": "http://172.16.222.100:8080/ruhunuDev/api/middleware/pullResults",
+      "username": "buddhika",
+      "password": "Buddhika123@",
+      "departmentId": "10001"
     },
     "tcpipSettings": {
       "socketCommunicationType": "Server",
-      "analyzerAddress": "192.168.1.100",
+      "analyzerAddress": "172.16.241.71",
       "middlewareAddress": "172.16.241.70",
       "analyzerPort": 1234,
-      "middlewarePort": 5678
+      "middlewarePort": 10100
     },
     "communicationSettings": {
       "resultSendingCriteria": "Sample",

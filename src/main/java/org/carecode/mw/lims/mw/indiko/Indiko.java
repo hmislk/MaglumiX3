@@ -1,21 +1,18 @@
 package org.carecode.mw.lims.mw.indiko;
 
-import java.util.concurrent.CountDownLatch;
-
 public class Indiko {
 
     public static void main(String[] args) {
         System.out.println("MDGPHM");
         SettingsLoader.loadSettings();
 
-        // Start the scheduler for periodic tasks
-        TimerScheduler scheduler = new TimerScheduler();
-        scheduler.start();
+        // Start the server in a separate thread to listen for connections from the analyzer
+        Thread serverThread = new Thread(() -> AnalyzerCommunicator.startServer());
+        serverThread.start();
 
-        // Keep the application running
-        CountDownLatch latch = new CountDownLatch(1);
+        // Keep the main thread alive to continue listening
         try {
-            latch.await();
+            serverThread.join();
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
