@@ -1,20 +1,30 @@
 package org.carecode.mw.lims.mw.indiko;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import com.google.gson.JsonObject;
+
 public class Indiko {
 
+    private static final Logger logger = LogManager.getLogger(Indiko.class);
+
     public static void main(String[] args) {
-        System.out.println("MDGPHM");
-        SettingsLoader.loadSettings();
+        logger.info("Starting Indiko middleware...");
 
-        // Start the server in a separate thread to listen for connections from the analyzer
-        Thread serverThread = new Thread(() -> AnalyzerCommunicator.startServer());
-        serverThread.start();
-
-        // Keep the main thread alive to continue listening
         try {
-            serverThread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.info("Loading settings...");
+            SettingsLoader.loadSettings();
+            logger.info("Settings loaded successfully.");
+        } catch (Exception e) {
+            logger.error("Failed to load settings.", e);
+            return;
         }
+
+        JsonObject middlewareSettings = SettingsLoader.getSettings().getAsJsonObject("middlewareSettings");
+        int port = middlewareSettings.get("middlewarePort").getAsInt();
+
+
+        IndikoServer server = new IndikoServer();
+        server.start(port);
     }
 }

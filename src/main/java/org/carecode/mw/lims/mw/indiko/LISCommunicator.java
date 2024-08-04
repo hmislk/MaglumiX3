@@ -14,7 +14,7 @@ public class LISCommunicator {
 
     public static void pullSampleData() {
         try {
-            JsonObject limsSettings = SettingsLoader.settings.getAsJsonObject("middlewareSettings").getAsJsonObject("limsSettings");
+            JsonObject limsSettings = SettingsLoader.getSettings().getAsJsonObject("middlewareSettings").getAsJsonObject("limsSettings");
             String pullSampleDataEndpoint = limsSettings.get("pullSampleDataEndpoint").getAsString();
 
             URL url = new URL(pullSampleDataEndpoint);
@@ -36,7 +36,7 @@ public class LISCommunicator {
 
                 // Process the response
                 JsonObject responseObject = JsonParser.parseString(response.toString()).getAsJsonObject();
-                handleSampleData(responseObject);
+                handleSampleData("");
             } else {
                 System.out.println("GET request failed");
             }
@@ -45,13 +45,7 @@ public class LISCommunicator {
         }
     }
 
-    private static void handleSampleData(JsonObject data) {
-        // Process the sample data and forward requests to the analyzer
-        for (JsonElement sampleElement : data.getAsJsonArray("samples")) {
-            JsonObject sample = sampleElement.getAsJsonObject();
-            String sampleId = sample.get("id").getAsString();
-            JsonArray tests = sample.getAsJsonArray("tests");
-//            AnalyzerCommunicator.sendRequestToAnalyzer(sampleId, tests);
-        }
+    public static String  handleSampleData(String data) {
+        return "";
     }
 }

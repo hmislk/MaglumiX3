@@ -17,7 +17,7 @@ public class AnalyzerCommunicator {
     private static final char ETX = 0x03; // End of Text
 
     public static void startServer() {
-        JsonObject tcpipSettings = SettingsLoader.settings.getAsJsonObject("middlewareSettings").getAsJsonObject("tcpipSettings");
+        JsonObject tcpipSettings = SettingsLoader.getSettings().getAsJsonObject("middlewareSettings").getAsJsonObject("tcpipSettings");
         int middlewarePort = tcpipSettings.get("middlewarePort").getAsInt();
 
         try (ServerSocket serverSocket = new ServerSocket(middlewarePort)) {
