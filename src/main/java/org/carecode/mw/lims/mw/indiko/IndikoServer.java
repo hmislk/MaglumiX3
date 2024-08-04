@@ -37,6 +37,8 @@ public class IndikoServer {
     boolean needToSendOrderingRecordForQuery;
     boolean needToSendEotForRecordForQuery;
 
+    PatientDataBundle patientDataBundle = new PatientDataBundle();
+
     String patientId;
     String sampleId;
     String patientName;
@@ -53,6 +55,9 @@ public class IndikoServer {
     Date sampledDate;
     char terminationCode = 'N';
     PatientRecord patientRecord;
+    ResultsRecord resultRecord;
+    OrderRecord orderRecord;
+    QueryRecord queryRecord;
 
     private ServerSocket serverSocket;
 
@@ -91,8 +96,23 @@ public class IndikoServer {
         try (InputStream in = new BufferedInputStream(clientSocket.getInputStream()); OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream())) {
 
             boolean sessionActive = true;
+            boolean inChecksum = false; // Flag to determine if we are currently reading checksum characters
+            int checksumCount = 0; // Counter for the checksum characters
+
             while (sessionActive) {
                 int data = in.read();
+
+                // Handling checksum reading
+                if (inChecksum) {
+                    logger.debug("Checksum character: " + (char) data);
+                    checksumCount++;
+                    if (checksumCount == 2) { // After reading two checksum characters, reset
+                        inChecksum = false;
+                        checksumCount = 0;
+                    }
+                    continue;
+                }
+
                 switch (data) {
                     case ENQ:
                         logger.debug("Received ENQ");
@@ -103,15 +123,29 @@ public class IndikoServer {
                     case ACK:
                         logger.debug("ACK Received.");
                         if (needToSendHeaderRecordForQuery) {
+                            logger.debug("Sending Header");
+                            limsName="CareCode";
+                            senderId="1101";
+                            processingId="22";
+                            versionNumber="33";
                             String hm = createLimsHeader(limsName, senderId, processingId, versionNumber);
+                            logger.debug(hm);
                             String shm = buildMessageWithChecksum(hm);
+                            logger.debug(shm);
                             sendResponse(shm, clientSocket);
                             frameNumber = 2;
                             needToSendHeaderRecordForQuery = false;
                             needToSendPatientRecordForQuery = true;
                             logger.debug("Sent " + shm);
                         } else if (needToSendPatientRecordForQuery) {
-                            String pm = createLimsPatientRecord(frameNumber, patientId, patientName, patientSex, referringDocName);
+                            logger.debug("Creating Patient record ");
+                            patientRecord = patientDataBundle.getPatientRecord();
+                            if(patientRecord.getPatientName()==null){
+                                patientRecord.setPatientName("Buddhika");
+                            }
+                            patientRecord.setFrameNumber(frameNumber);
+                            String pm = createLimsPatientRecord(patientRecord);
+                            logger.debug("Sent " + pm);
                             String spm = buildMessageWithChecksum(pm);
                             sendResponse(spm, clientSocket);
                             frameNumber = 3;
@@ -120,9 +154,11 @@ public class IndikoServer {
                             logger.debug("Sent " + spm);
                         } else if (needToSendOrderingRecordForQuery) {
                             if (testNames == null || testNames.isEmpty()) {
-                                testNames = Arrays.asList("Gcp GP");
+                                testNames = Arrays.asList("Gluc GP");
                             }
-                            String om = createLimsOrderRecord(frameNumber, sampleId, testNames, specimanCode, sampledDate, testInformation);
+                            orderRecord = patientDataBundle.getOrderRecords().get(0);
+                            orderRecord.setFrameNumber(frameNumber);
+                            String om = createLimsOrderRecord(orderRecord);
                             String som = buildMessageWithChecksum(om);
                             sendResponse(som, clientSocket);
                             frameNumber = 4;
@@ -139,12 +175,14 @@ public class IndikoServer {
                             respondingQuery = false;
                             respondingResults = false;
                             logger.debug("Sent " + qtmq);
+                        } else {
+                            out.write(EOT);
+                            out.flush();
+                            logger.debug("Sent EOT");
                         }
-                        out.write(EOT);
-                        out.flush();
-                        logger.debug("Sent EOT");
                         break;
                     case STX:
+                        inChecksum = true; // Set to start checksum detection
                         StringBuilder message = new StringBuilder();
                         while ((data = in.read()) != ETX) {
                             if (data == -1) {
@@ -159,7 +197,7 @@ public class IndikoServer {
                         logger.debug("Sent ACK after STX-ETX block");
                         break;
                     case EOT:
-                        logger.debug("EOT Received ");
+                        logger.debug("EOT Received");
                         if (respondingQuery) {
                             logger.debug("Starting Transmission to send test requests");
                             out.write(ENQ);
@@ -167,14 +205,16 @@ public class IndikoServer {
                             logger.debug("Sent ENQ");
                             break;
                         } else if (respondingResults) {
-
+                            LISCommunicator.pushResults(patientDataBundle);
                         } else {
                             sessionActive = false;
                             logger.debug("Received EOT, ending session");
                         }
                         break;
                     default:
-                        logger.debug("Received unexpected data: " + (char) data);
+                        if (!inChecksum) { // Ignore unexpected data if not in checksum reading mode
+                            logger.debug("Received unexpected data: " + (char) data);
+                        }
                         break;
                 }
             }
@@ -204,25 +244,25 @@ public class IndikoServer {
         return header;
     }
 
-    public String createLimsPatientRecord(int frameNumber, String patientId, String patientName, String patientSex, String attendingDoctor) {
+    public String createLimsPatientRecord(PatientRecord patient) {
         // Delimiter used in the ASTM protocol
         String delimiter = "|";
 
         // Start of patient segment
-        String patientStart = frameNumber + "P" + delimiter;
+        String patientStart = patient.getFrameNumber() + "P" + delimiter;
 
         // Patient Information
-        // Note: Adding multiple delimiters as placeholders for optional fields not used in the example
-        String patientInfo = patientId + delimiter
+        // Using data directly from the PatientRecord object
+        String patientInfo = patient.getPatientId() + delimiter
                 + delimiter // Placeholder for optional second ID
-                + patientName + delimiter
+                + patient.getPatientName() + delimiter
                 + delimiter // Placeholder for patient's second name if applicable
                 + delimiter // Placeholder for patient's DOB (Date of Birth)
-                + patientSex + delimiter
+                + patient.getPatientSex() + delimiter
                 + delimiter + delimiter // Placeholders for race and patient's address
                 + delimiter + delimiter // Placeholders for reserved fields
                 + delimiter + delimiter // Placeholders for phone number and attending physician's ID
-                + attendingDoctor + delimiter;
+                + patient.getAttendingDoctor() + delimiter;
 
         return patientStart + patientInfo;
     }
@@ -258,6 +298,36 @@ public class IndikoServer {
         return orderStart + sampleInfo + testCodes + orderInfo;
     }
 
+    public String createLimsOrderRecord(OrderRecord order) {
+        // Delimiter and separator setup
+        String delimiter = "|";
+        String caret = "^";
+
+        // SimpleDateFormat to format the Date object to the required ASTM format
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmss");
+
+        // Format the date
+        String formattedDate = dateFormat.format(order.getOrderDateTimeStr());
+
+        // Start of order segment
+        String orderStart = order.getFrameNumber() + "O" + delimiter;
+
+        // Sample Information
+        String sampleInfo = order.getSampleId() + caret + "0.0" + caret + "3" + caret + "1" + delimiter;
+
+        // Test Codes, combining test names into one string separated by carets
+        String testCodes = order.getTestNames().stream()
+                .map(testName -> caret + caret + caret + testName)
+                .collect(Collectors.joining(caret));
+
+        // Order Information
+        String orderInfo = order.getSpecimenCode() + delimiter + formattedDate + delimiter
+                + delimiter + delimiter // Placeholders for priority and ordering physician
+                + order.getTestInformation() + delimiter + "3" + delimiter; // Additional optional fields
+
+        return orderStart + sampleInfo + testCodes + orderInfo;
+    }
+
     public String createLimsTerminationRecord(int frameNumber, char terminationCode) {
         String delimiter = "|";
         String terminationStart = frameNumber + "L" + delimiter;
@@ -266,37 +336,42 @@ public class IndikoServer {
     }
 
     private void processMessage(String data, Socket clientSocket) {
-        if (data.startsWith("1H|")) {  // Header Record
+        if (data.contains("H|")) {  // Header Record
+            patientDataBundle = new PatientDataBundle();
             receivingQuery = false;
             receivingResults = false;
             respondingQuery = false;
             respondingResults = false;
+            needToSendEotForRecordForQuery = false;
+            needToSendOrderingRecordForQuery = false;
+            needToSendPatientRecordForQuery = false;
+            needToSendHeaderRecordForQuery = false;
             logger.debug("Header Record Received: " + data);
-        } else if (data.startsWith("2Q|")) {  // Query Record
+        } else if (data.contains("Q|")) {  // Query Record
             receivingQuery = true;
-            respondingQuery = false;
-//            String response = createResponseForTest("Gluc GP");
-//            sendResponse(response, clientSocket);
-        } else if (data.startsWith("3L|")) {  // Termination Record
+            needToSendHeaderRecordForQuery = true;
+            logger.debug("Query Record Received: " + data);
+            queryRecord = parseQueryRecord(data);
+            patientDataBundle.getQueryRecords().add(queryRecord);
+            logger.debug("Parsed the Query Record: " + queryRecord);
+        } else if (data.contains("P|")) {  // Patient Record
+            logger.debug("Patient Record Received: " + data);
+            patientRecord = parsePatientRecord(data);
+            patientDataBundle.setPatientRecord(patientRecord);
+            logger.debug("Patient Record Parsed: " + patientRecord);
+        } else if (data.contains("R|")) {  // Result Record
+            logger.debug("Result Record Received: " + data);
+            respondingResults = true;
+            resultRecord = parseResultsRecord(data);
+            patientDataBundle.getResultsRecords().add(resultRecord);
+            logger.debug("Result Record Parsed: " + resultRecord);
+        } else if (data.contains("L|")) {  // Termination Record
             receivingQuery = false;
             respondingQuery = true;
-//            String response = createResponseForTest("Gluc GP");
-//            sendResponse(response, clientSocket);
-        } else if (data.startsWith("2P|")) {  // Patient Record
-            logger.debug("Patient Record Received: " + data);
-            // Additional logic to handle patient data
-        } else if (data.startsWith("3O|") || data.startsWith("4R|")) {  // Order or Result Record
-            handleTestResults(data);
-            String response = createAcknowledgementResponse();
-            sendResponse(response, clientSocket);
-        } else if (data.startsWith("5L|")) {  // Terminator Record
-            logger.debug("Terminator Record Received: " + data);
+            logger.debug("Termination Record Received: " + data);
+        } else {
+            logger.debug("Unknown Record Received: " + data);
         }
-    }
-
-    private String createAcknowledgementResponse() {
-        String message = "2R|1|||Test Received||";
-        return buildMessageWithChecksum(message);
     }
 
     private String buildMessageWithChecksum(String message) {
@@ -308,11 +383,6 @@ public class IndikoServer {
         String formattedMessage = String.format("%c%s%c%c%02X", STX, message, ETX, CR, checksum);
         logger.debug("Built message with checksum: " + formattedMessage);
         return formattedMessage;
-    }
-
-    private void handleTestResults(String data) {
-        logger.info("Test results received: " + data);
-        // Additional handling for test results
     }
 
     // Method to parse the patient segment and return a PatientRecord object
@@ -354,11 +424,117 @@ public class IndikoServer {
         );
     }
 
+    // Method to parse the result segment and return a ResultsRecord object
+    public static ResultsRecord parseResultsRecord(String resultSegment) {
+        // Assume the segment format is:
+        // <STX>frameNumberR|testCode|resultValue|resultUnits|resultDateTime|instrumentName<CR><ETX>checksum
+
+        // Split the segment by '|' to extract fields
+        String[] fields = resultSegment.split("\\|");
+
+        // Extract frame number and remove non-numeric characters (<STX>, etc.)
+        int frameNumber = Integer.parseInt(fields[0].replaceAll("[^0-9]", ""));
+
+        // Extract test code, which might contain multiple caret (^) separated values
+        String testCode = fields[1];
+
+        // Parse the result value as double
+        double resultValue = Double.parseDouble(fields[2]);
+
+        // Extract result units
+        String resultUnits = fields[3];
+
+        // Extract the result date and time
+        String resultDateTime = fields[4];
+
+        // Extract instrument name
+        String instrumentName = fields[5];
+
+        // Return a new ResultsRecord object using the extracted data
+        return new ResultsRecord(
+                frameNumber,
+                testCode,
+                resultValue,
+                resultUnits,
+                resultDateTime,
+                instrumentName
+        );
+    }
+
+    public static OrderRecord parseOrderRecord(String orderSegment) {
+        // Assume the segment format is:
+        // <STX>frameNumberO|sampleId^0.0^3^1|testNames|specimenCode|orderDateTime||||testInformation|3||||||O<CR><ETX>checksum
+
+        // Split the segment by '|' to extract fields
+        String[] fields = orderSegment.split("\\|");
+
+        // Extract frame number and remove non-numeric characters (<STX>, etc.)
+        int frameNumber = Integer.parseInt(fields[0].replaceAll("[^0-9]", ""));
+
+        // Sample ID and associated data (assuming specific formatting here)
+        String[] sampleDetails = fields[1].split("\\^");
+        String sampleId = sampleDetails[0];
+
+        // Extract test names, assuming they are separated by '^' inside a field like ^^^test1^test2
+        List<String> testNames = Arrays.stream(fields[2].split("\\^"))
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.toList());
+
+        // Specimen code
+        String specimenCode = fields[3];
+
+        // Order date and time
+        String orderDateTime = fields[4];
+
+        // Test information
+        String testInformation = fields[6]; // Assuming test information is in the 7th segment
+
+        // Return a new OrderRecord object using the extracted data
+        return new OrderRecord(
+                frameNumber,
+                sampleId,
+                testNames,
+                specimenCode,
+                orderDateTime,
+                testInformation
+        );
+    }
+
+    // Method to parse the query segment and return a QueryRecord object
+    public static QueryRecord parseQueryRecord(String querySegment) {
+        // Assume the segment format is:
+        // <STX>frameNumberQ|sampleId^additionalData1^additionalData2|universalTestId||||||queryType<CR><ETX>checksum
+
+        // Split the segment by '|' to extract fields
+        String[] fields = querySegment.split("\\|");
+
+        // Extract frame number and remove non-numeric characters (<STX>, etc.)
+        int frameNumber = Integer.parseInt(fields[0].replaceAll("[^0-9]", ""));
+
+        // Sample ID, considering that sample ID and possibly additional data separated by '^'
+        String[] sampleDetails = fields[1].split("\\^");
+        String sampleId = sampleDetails[0];
+
+        // Universal Test ID - Assuming the test is specified in a caret-separated sequence
+        String universalTestId = fields[2].split("\\^")[0];
+
+        // Query Type - Assuming the last field before CR is the query type
+        String queryType = fields[fields.length - 1].replaceAll("[^a-zA-Z]", "");  // Removes non-letter characters, e.g., CR, ETX
+
+        // Return a new QueryRecord object using the extracted data
+        return new QueryRecord(
+                frameNumber,
+                sampleId,
+                universalTestId,
+                queryType
+        );
+    }
+
     private void sendResponse(String response, Socket clientSocket) {
         try {
             OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream());
             out.write(response.getBytes());
-            out.write(ACK);
+//            out.write(ACK);
             out.flush();
             logger.debug("Response sent: " + response);
         } catch (IOException e) {
