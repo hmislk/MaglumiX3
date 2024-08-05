@@ -1,0 +1,44 @@
+2024-08-05 04:12:14 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 04:12:15 INFO  Indiko:15 - Loading settings...
+2024-08-05 04:12:15 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-05 04:12:15 INFO  Indiko:17 - Settings loaded successfully.
+2024-08-05 04:12:15 INFO  IndikoServer:67 - Server started on port 10100
+2024-08-05 04:12:15 INFO  IndikoServer:71 - New client connected: 172.16.241.12
+2024-08-05 04:13:26 DEBUG IndikoServer:118 - Received ENQ
+2024-08-05 04:13:26 DEBUG IndikoServer:121 - Sent ACK
+2024-08-05 04:13:26 DEBUG IndikoServer:193 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805040559
+2024-08-05 04:13:26 DEBUG IndikoServer:349 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805040559
+2024-08-05 04:13:26 DEBUG IndikoServer:197 - Sent ACK after STX-ETX block
+2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: E
+2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: A
+2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+
+2024-08-05 04:13:26 DEBUG IndikoServer:193 - Complete message received: 2Q|1|^2240801063^^||^^^ALL^||||||||O
+2024-08-05 04:13:26 DEBUG IndikoServer:353 - Query Record Received: 2Q|1|^2240801063^^||^^^ALL^||||||||O
+2024-08-05 04:13:26 DEBUG IndikoServer:356 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@4f6f416f
+2024-08-05 04:13:26 DEBUG IndikoServer:197 - Sent ACK after STX-ETX block
+2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: 4
+2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: 8
+2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+
+2024-08-05 04:13:26 DEBUG IndikoServer:193 - Complete message received: 3L|1|N
+2024-08-05 04:13:26 DEBUG IndikoServer:371 - Termination Record Received: 3L|1|N
+2024-08-05 04:13:26 DEBUG IndikoServer:197 - Sent ACK after STX-ETX block
+2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: 0
+2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: 6
+2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+
+2024-08-05 04:13:26 DEBUG IndikoServer:200 - EOT Received
+2024-08-05 04:13:26 DEBUG IndikoServer:202 - Starting Transmission to send test requests
+2024-08-05 04:13:26 DEBUG IndikoServer:205 - Sent ENQ
+2024-08-05 04:13:26 DEBUG IndikoServer:124 - ACK Received.
+2024-08-05 04:13:26 DEBUG IndikoServer:126 - Sending Header
+2024-08-05 04:13:26 DEBUG IndikoServer:132 - 1H||\^&||1101^CareCode^33|||22
+2024-08-05 04:13:26 DEBUG IndikoServer:384 - Built message with checksum: 1H||\^&||1101^CareCode^33|||22FC
+2024-08-05 04:13:26 DEBUG IndikoServer:134 - 1H||\^&||1101^CareCode^33|||22FC
+2024-08-05 04:13:26 DEBUG IndikoServer:539 - Response sent: 1H||\^&||1101^CareCode^33|||22FC
+2024-08-05 04:13:26 DEBUG IndikoServer:139 - Sent 1H||\^&||1101^CareCode^33|||22FC
+2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 

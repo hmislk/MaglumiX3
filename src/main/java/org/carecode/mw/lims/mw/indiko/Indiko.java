@@ -11,6 +11,19 @@ public class Indiko {
     public static void main(String[] args) {
         logger.info("Starting Indiko middleware...");
 
+        IndikoServer inds = new IndikoServer();
+        String header = inds.createLimsHeaderRecord();
+        System.out.println("header = " + header);
+        String checksum = inds.calculateChecksum(header);
+        System.out.println("checksum = " + checksum);
+        
+        
+        String copiedText = "1H|^&||||1^LIS host^1.0||||||P|";
+        checksum = inds.calculateChecksum(copiedText);
+        System.out.println("checksum = " + checksum);
+        
+        
+
         try {
             logger.info("Loading settings...");
             SettingsLoader.loadSettings();
@@ -22,7 +35,6 @@ public class Indiko {
 
         JsonObject middlewareSettings = SettingsLoader.getSettings().getAsJsonObject("middlewareSettings");
         int port = middlewareSettings.get("middlewarePort").getAsInt();
-
 
         IndikoServer server = new IndikoServer();
         server.start(port);

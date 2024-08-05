@@ -1,44 +1,616 @@
-2024-08-05 04:12:14 INFO  Indiko:12 - Starting Indiko middleware...
-2024-08-05 04:12:15 INFO  Indiko:15 - Loading settings...
-2024-08-05 04:12:15 INFO  SettingsLoader:21 - Settings loaded from config.json
-2024-08-05 04:12:15 INFO  Indiko:17 - Settings loaded successfully.
-2024-08-05 04:12:15 INFO  IndikoServer:67 - Server started on port 10100
-2024-08-05 04:12:15 INFO  IndikoServer:71 - New client connected: 172.16.241.12
-2024-08-05 04:13:26 DEBUG IndikoServer:118 - Received ENQ
-2024-08-05 04:13:26 DEBUG IndikoServer:121 - Sent ACK
-2024-08-05 04:13:26 DEBUG IndikoServer:193 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805040559
-2024-08-05 04:13:26 DEBUG IndikoServer:349 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805040559
-2024-08-05 04:13:26 DEBUG IndikoServer:197 - Sent ACK after STX-ETX block
-2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: E
-2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: A
-2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
-2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+2024-08-05 05:58:23 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 05:58:23 INFO  Indiko:15 - Loading settings...
+2024-08-05 05:58:23 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-05 05:58:23 INFO  Indiko:17 - Settings loaded successfully.
+2024-08-05 05:58:23 INFO  IndikoServer:68 - Server started on port 10100
+2024-08-05 05:58:24 INFO  IndikoServer:72 - New client connected: 172.16.241.12
+2024-08-05 05:59:14 DEBUG IndikoServer:119 - Received ENQ
+2024-08-05 05:59:14 DEBUG IndikoServer:122 - Sent ACK
+2024-08-05 05:59:14 DEBUG IndikoServer:195 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805055147
+2024-08-05 05:59:14 DEBUG IndikoServer:332 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805055147
+2024-08-05 05:59:14 DEBUG IndikoServer:339 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [53] [48] [53] [53] [49] [52] [55] [13] 
+2024-08-05 05:59:14 DEBUG IndikoServer:351 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805055147
+2024-08-05 05:59:14 DEBUG IndikoServer:199 - Sent ACK after STX-ETX block
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character: E (ASCII: 69)
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character: 9 (ASCII: 57)
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character:  (ASCII: 13)
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-05 05:59:14 DEBUG IndikoServer:195 - Complete message received: 2Q|1|^2240801063^^||^^^ALL^||||||||O
+2024-08-05 05:59:14 DEBUG IndikoServer:332 - Received message to process: 2Q|1|^2240801063^^||^^^ALL^||||||||O
+2024-08-05 05:59:14 DEBUG IndikoServer:339 - ASCII sequence of received message: [50] [81] [124] [49] [124] [94] [50] [50] [52] [48] [56] [48] [49] [48] [54] [51] [94] [94] [124] [124] [94] [94] [94] [65] [76] [76] [94] [124] [124] [124] [124] [124] [124] [124] [124] [79] [13] 
+2024-08-05 05:59:14 DEBUG IndikoServer:355 - Query Record Received: 2Q|1|^2240801063^^||^^^ALL^||||||||O
+2024-08-05 05:59:14 DEBUG IndikoServer:358 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@68dc098b
+2024-08-05 05:59:14 DEBUG IndikoServer:199 - Sent ACK after STX-ETX block
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character: 4 (ASCII: 52)
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character: 8 (ASCII: 56)
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character:  (ASCII: 13)
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-05 05:59:14 DEBUG IndikoServer:195 - Complete message received: 3L|1|N
+2024-08-05 05:59:14 DEBUG IndikoServer:332 - Received message to process: 3L|1|N
+2024-08-05 05:59:14 DEBUG IndikoServer:339 - ASCII sequence of received message: [51] [76] [124] [49] [124] [78] [13] 
+2024-08-05 05:59:14 DEBUG IndikoServer:373 - Termination Record Received: 3L|1|N
+2024-08-05 05:59:14 DEBUG IndikoServer:199 - Sent ACK after STX-ETX block
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character: 0 (ASCII: 48)
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character: 6 (ASCII: 54)
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character:  (ASCII: 13)
+2024-08-05 05:59:14 DEBUG IndikoServer:108 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-05 05:59:14 DEBUG IndikoServer:202 - EOT Received
+2024-08-05 05:59:14 DEBUG IndikoServer:204 - Starting Transmission to send test requests
+2024-08-05 05:59:14 DEBUG IndikoServer:207 - Sent ENQ
+2024-08-05 05:59:14 DEBUG IndikoServer:125 - ACK Received.
+2024-08-05 05:59:14 DEBUG IndikoServer:127 - Sending Header
+2024-08-05 05:59:14 DEBUG IndikoServer:134 - 1H|^&|||1^LIS host^1.0||||||P|
+2024-08-05 05:59:14 DEBUG IndikoServer:396 - Message ASCII Values: [2] [49] [72] [124] [94] [38] [124] [124] [124] [49] [94] [76] [73] [83] [32] [104] [111] [115] [116] [94] [49] [46] [48] [124] [124] [124] [124] [124] [124] [80] [124] [3] [69] [51] [13] [10] 
+2024-08-05 05:59:14 DEBUG IndikoServer:398 - Built message with checksum: 1H|^&|||1^LIS host^1.0||||||P|E3
 
-2024-08-05 04:13:26 DEBUG IndikoServer:193 - Complete message received: 2Q|1|^2240801063^^||^^^ALL^||||||||O
-2024-08-05 04:13:26 DEBUG IndikoServer:353 - Query Record Received: 2Q|1|^2240801063^^||^^^ALL^||||||||O
-2024-08-05 04:13:26 DEBUG IndikoServer:356 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@4f6f416f
-2024-08-05 04:13:26 DEBUG IndikoServer:197 - Sent ACK after STX-ETX block
-2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: 4
-2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: 8
-2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
-2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+2024-08-05 05:59:14 DEBUG IndikoServer:136 - 1H|^&|||1^LIS host^1.0||||||P|E3
 
-2024-08-05 04:13:26 DEBUG IndikoServer:193 - Complete message received: 3L|1|N
-2024-08-05 04:13:26 DEBUG IndikoServer:371 - Termination Record Received: 3L|1|N
-2024-08-05 04:13:26 DEBUG IndikoServer:197 - Sent ACK after STX-ETX block
-2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: 0
-2024-08-05 04:13:26 DEBUG IndikoServer:107 - Checksum character: 6
-2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
-2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+2024-08-05 05:59:14 DEBUG IndikoServer:553 - Response sent: 1H|^&|||1^LIS host^1.0||||||P|E3
 
-2024-08-05 04:13:26 DEBUG IndikoServer:200 - EOT Received
-2024-08-05 04:13:26 DEBUG IndikoServer:202 - Starting Transmission to send test requests
-2024-08-05 04:13:26 DEBUG IndikoServer:205 - Sent ENQ
-2024-08-05 04:13:26 DEBUG IndikoServer:124 - ACK Received.
-2024-08-05 04:13:26 DEBUG IndikoServer:126 - Sending Header
-2024-08-05 04:13:26 DEBUG IndikoServer:132 - 1H||\^&||1101^CareCode^33|||22
-2024-08-05 04:13:26 DEBUG IndikoServer:384 - Built message with checksum: 1H||\^&||1101^CareCode^33|||22FC
-2024-08-05 04:13:26 DEBUG IndikoServer:134 - 1H||\^&||1101^CareCode^33|||22FC
-2024-08-05 04:13:26 DEBUG IndikoServer:539 - Response sent: 1H||\^&||1101^CareCode^33|||22FC
-2024-08-05 04:13:26 DEBUG IndikoServer:139 - Sent 1H||\^&||1101^CareCode^33|||22FC
-2024-08-05 04:13:26 DEBUG IndikoServer:216 - Received unexpected data: 
+2024-08-05 05:59:14 DEBUG IndikoServer:141 - Sent 1H|^&|||1^LIS host^1.0||||||P|E3
+
+2024-08-05 05:59:14 DEBUG IndikoServer:218 - Received unexpected data:  (ASCII: 21)
+2024-08-05 06:00:55 ERROR IndikoServer:224 - Error during client communication
+java.net.SocketException: Software caused connection abort: recv failed
+	at java.net.SocketInputStream.socketRead0(Native Method) ~[?:?]
+	at java.net.SocketInputStream.socketRead(SocketInputStream.java:115) ~[?:?]
+	at java.net.SocketInputStream.read(SocketInputStream.java:168) ~[?:?]
+	at java.net.SocketInputStream.read(SocketInputStream.java:140) ~[?:?]
+	at java.io.BufferedInputStream.fill(BufferedInputStream.java:252) ~[?:?]
+	at java.io.BufferedInputStream.read(BufferedInputStream.java:271) ~[?:?]
+	at org.carecode.mw.lims.mw.indiko.IndikoServer.handleClient(IndikoServer.java:104) [classes/:?]
+	at org.carecode.mw.lims.mw.indiko.IndikoServer.start(IndikoServer.java:73) [classes/:?]
+	at org.carecode.mw.lims.mw.indiko.Indiko.main(Indiko.java:28) [classes/:?]
+2024-08-05 23:06:37 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 23:08:12 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 23:13:49 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 23:17:01 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 23:20:52 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 23:24:10 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 23:27:57 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 23:28:38 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 23:51:59 INFO  IndikoServer:72 - New client connected: 172.16.241.12
+2024-08-05 23:54:24 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 23:54:24 INFO  Indiko:28 - Loading settings...
+2024-08-05 23:54:24 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-05 23:54:24 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-05 23:54:24 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-05 23:54:24 INFO  IndikoServer:80 - New client connected: 172.16.241.12
+2024-08-05 23:54:24 DEBUG IndikoServer:244 - ENQ sent
+2024-08-05 23:54:24 DEBUG IndikoServer:276 - ACK Received.
+2024-08-05 23:54:24 DEBUG IndikoServer:279 - H|\^&|||1^LIS host^1.0|||||||P
+2024-08-05 23:54:24 DEBUG IndikoServer:599 - Message ASCII Values: [2] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [76] [73] [83] [32] [104] [111] [115] [116] [94] [49] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [3] [48] [69] [13] [10] 
+2024-08-05 23:54:24 DEBUG IndikoServer:601 - Built message with checksum: H|\^&|||1^LIS host^1.0|||||||P0E
+
+2024-08-05 23:54:24 DEBUG IndikoServer:281 - H|\^&|||1^LIS host^1.0|||||||P0E
+
+2024-08-05 23:54:24 DEBUG IndikoServer:756 - Response sent: H|\^&|||1^LIS host^1.0|||||||P0E
+
+2024-08-05 23:54:24 DEBUG IndikoServer:288 - Sent H|\^&|||1^LIS host^1.0|||||||P0E
+
+2024-08-05 23:54:25 DEBUG IndikoServer:273 - NAK Received. Terminating
+2024-08-06 00:16:23 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 00:16:23 INFO  Indiko:28 - Loading settings...
+2024-08-06 00:16:23 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 00:16:23 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 00:16:23 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 00:16:24 INFO  IndikoServer:80 - New client connected: 172.16.241.12
+2024-08-06 00:16:24 DEBUG IndikoServer:244 - ENQ sent
+2024-08-06 00:16:24 DEBUG IndikoServer:276 - ACK Received.
+2024-08-06 00:16:24 DEBUG IndikoServer:280 - 1H|\^&|||1^LIS host^1.0|||||||P
+2024-08-06 00:16:24 DEBUG IndikoServer:590 - Message ASCII Values: [2] [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [76] [73] [83] [32] [104] [111] [115] [116] [94] [49] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [3] [51] [70] [13] [10] 
+2024-08-06 00:16:24 DEBUG IndikoServer:591 - Built message with checksum: 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 00:16:24 DEBUG IndikoServer:282 - 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 00:16:24 DEBUG IndikoServer:770 - Response sent: 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 00:16:24 DEBUG IndikoServer:289 - Sent 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 00:16:24 DEBUG IndikoServer:273 - NAK Received. Terminating
+2024-08-06 00:33:05 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 00:33:05 INFO  Indiko:28 - Loading settings...
+2024-08-06 00:33:05 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 00:33:05 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 00:33:05 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 00:33:06 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 00:34:04 DEBUG IndikoServer:126 - Received ENQ
+2024-08-06 00:34:04 DEBUG IndikoServer:129 - Sent ACK
+2024-08-06 00:34:04 DEBUG IndikoServer:209 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806002716
+2024-08-06 00:34:04 DEBUG IndikoServer:546 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806002716
+2024-08-06 00:34:04 DEBUG IndikoServer:553 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [54] [48] [48] [50] [55] [49] [54] [13] 
+2024-08-06 00:34:04 DEBUG IndikoServer:565 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806002716
+2024-08-06 00:34:04 DEBUG IndikoServer:213 - Sent ACK after STX-ETX block
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character: 4 (ASCII: 52)
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 00:34:04 DEBUG IndikoServer:209 - Complete message received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 00:34:04 DEBUG IndikoServer:546 - Received message to process: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 00:34:04 DEBUG IndikoServer:553 - ASCII sequence of received message: [50] [81] [124] [49] [124] [94] [50] [50] [52] [48] [56] [48] [49] [51] [57] [56] [94] [94] [124] [124] [94] [94] [94] [65] [76] [76] [94] [124] [124] [124] [124] [124] [124] [124] [124] [79] [13] 
+2024-08-06 00:34:04 DEBUG IndikoServer:569 - Query Record Received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 00:34:04 DEBUG IndikoServer:572 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@2e1ef60
+2024-08-06 00:34:04 DEBUG IndikoServer:213 - Sent ACK after STX-ETX block
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character: 5 (ASCII: 53)
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character: 3 (ASCII: 51)
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 00:34:04 DEBUG IndikoServer:209 - Complete message received: 3L|1|N
+2024-08-06 00:34:04 DEBUG IndikoServer:546 - Received message to process: 3L|1|N
+2024-08-06 00:34:04 DEBUG IndikoServer:553 - ASCII sequence of received message: [51] [76] [124] [49] [124] [78] [13] 
+2024-08-06 00:34:04 DEBUG IndikoServer:587 - Termination Record Received: 3L|1|N
+2024-08-06 00:34:04 DEBUG IndikoServer:213 - Sent ACK after STX-ETX block
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character: 0 (ASCII: 48)
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character: 6 (ASCII: 54)
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 00:34:04 DEBUG IndikoServer:115 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 00:34:04 DEBUG IndikoServer:216 - EOT Received
+2024-08-06 00:34:04 DEBUG IndikoServer:218 - Starting Transmission to send test requests
+2024-08-06 00:34:04 DEBUG IndikoServer:221 - Sent ENQ
+2024-08-06 00:34:04 DEBUG IndikoServer:132 - ACK Received.
+2024-08-06 00:34:04 DEBUG IndikoServer:134 - Sending Header
+2024-08-06 00:34:04 DEBUG IndikoServer:144 - 1H|\^&|||1^LIS host^1.0|||||||P
+2024-08-06 00:34:04 DEBUG IndikoServer:600 - Message ASCII Values: [2] [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [76] [73] [83] [32] [104] [111] [115] [116] [94] [49] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [3] [51] [70] [13] [10] 
+2024-08-06 00:34:04 DEBUG IndikoServer:601 - Built message with checksum: 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 00:34:04 DEBUG IndikoServer:146 - 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 00:34:04 DEBUG IndikoServer:780 - Response sent: 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 00:34:04 DEBUG IndikoServer:152 - Sent 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 00:34:04 DEBUG IndikoServer:232 - Received unexpected data:  (ASCII: 21)
+2024-08-06 00:58:24 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 00:58:24 INFO  Indiko:28 - Loading settings...
+2024-08-06 00:58:24 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 00:58:24 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 00:58:24 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 00:58:24 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:01:36 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 01:01:37 INFO  Indiko:28 - Loading settings...
+2024-08-06 01:01:37 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 01:01:37 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 01:01:37 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 01:01:37 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:07:22 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 01:07:22 INFO  Indiko:28 - Loading settings...
+2024-08-06 01:07:22 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 01:07:22 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 01:07:22 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 01:07:22 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:10:36 DEBUG IndikoServer:125 - Received ENQ
+2024-08-06 01:10:36 DEBUG IndikoServer:128 - Sent ACK
+2024-08-06 01:10:36 DEBUG IndikoServer:143 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806010348
+2024-08-06 01:10:36 DEBUG IndikoServer:561 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806010348
+2024-08-06 01:10:36 DEBUG IndikoServer:568 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [54] [48] [49] [48] [51] [52] [56] [13] 
+2024-08-06 01:10:36 DEBUG IndikoServer:580 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806010348
+2024-08-06 01:10:36 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character: 4 (ASCII: 52)
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:10:36 DEBUG IndikoServer:143 - Complete message received: 2P|1|2240801361|||K.T.KANTHI||||||||||||||||||||||||||||
+2024-08-06 01:10:36 DEBUG IndikoServer:561 - Received message to process: 2P|1|2240801361|||K.T.KANTHI||||||||||||||||||||||||||||
+2024-08-06 01:10:36 DEBUG IndikoServer:568 - ASCII sequence of received message: [50] [80] [124] [49] [124] [50] [50] [52] [48] [56] [48] [49] [51] [54] [49] [124] [124] [124] [75] [46] [84] [46] [75] [65] [78] [84] [72] [73] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [13] 
+2024-08-06 01:10:36 DEBUG IndikoServer:589 - Patient Record Received: 2P|1|2240801361|||K.T.KANTHI||||||||||||||||||||||||||||
+2024-08-06 01:10:36 DEBUG IndikoServer:592 - Patient Record Parsed: org.carecode.mw.lims.mw.indiko.PatientRecord@2e1ef60
+2024-08-06 01:10:36 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character: 7 (ASCII: 55)
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character: 4 (ASCII: 52)
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:10:36 DEBUG IndikoServer:143 - Complete message received: 3O|1|2240801361||^^^GLU^0.0|R||||||X||||1|||||||||1|F
+2024-08-06 01:10:36 DEBUG IndikoServer:561 - Received message to process: 3O|1|2240801361||^^^GLU^0.0|R||||||X||||1|||||||||1|F
+2024-08-06 01:10:36 DEBUG IndikoServer:568 - ASCII sequence of received message: [51] [79] [124] [49] [124] [50] [50] [52] [48] [56] [48] [49] [51] [54] [49] [124] [124] [94] [94] [94] [71] [76] [85] [94] [48] [46] [48] [124] [82] [124] [124] [124] [124] [124] [124] [88] [124] [124] [124] [124] [49] [124] [124] [124] [124] [124] [124] [124] [124] [124] [49] [124] [70] [13] 
+2024-08-06 01:10:36 DEBUG IndikoServer:594 - Result Record Received: 3O|1|2240801361||^^^GLU^0.0|R||||||X||||1|||||||||1|F
+2024-08-06 01:10:36 DEBUG IndikoServer:598 - Result Record Parsed: org.carecode.mw.lims.mw.indiko.ResultsRecord@1b7c473a
+2024-08-06 01:10:36 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character: 1 (ASCII: 49)
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character: A (ASCII: 65)
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:10:36 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:10:36 DEBUG IndikoServer:143 - Complete message received: 4R|1|^^^GLU^0.0|99|mg/dl||N||F\R||Hafsa||20240805152951|Analyzer 1
+2024-08-06 01:10:36 DEBUG IndikoServer:561 - Received message to process: 4R|1|^^^GLU^0.0|99|mg/dl||N||F\R||Hafsa||20240805152951|Analyzer 1
+2024-08-06 01:10:36 DEBUG IndikoServer:568 - ASCII sequence of received message: [52] [82] [124] [49] [124] [94] [94] [94] [71] [76] [85] [94] [48] [46] [48] [124] [57] [57] [124] [109] [103] [47] [100] [108] [124] [124] [78] [124] [124] [70] [92] [82] [124] [124] [72] [97] [102] [115] [97] [124] [124] [50] [48] [50] [52] [48] [56] [48] [53] [49] [53] [50] [57] [53] [49] [124] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [13] 
+2024-08-06 01:10:36 DEBUG IndikoServer:594 - Result Record Received: 4R|1|^^^GLU^0.0|99|mg/dl||N||F\R||Hafsa||20240805152951|Analyzer 1
+2024-08-06 01:10:36 INFO  IndikoServer:96 - Server stopped.
+2024-08-06 01:14:48 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 01:14:48 INFO  Indiko:28 - Loading settings...
+2024-08-06 01:14:48 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 01:14:48 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 01:14:48 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 01:14:48 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:15:19 DEBUG IndikoServer:125 - Received ENQ
+2024-08-06 01:15:19 DEBUG IndikoServer:128 - Sent ACK
+2024-08-06 01:15:19 DEBUG IndikoServer:143 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806010831
+2024-08-06 01:15:19 DEBUG IndikoServer:561 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806010831
+2024-08-06 01:15:19 DEBUG IndikoServer:568 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [54] [48] [49] [48] [56] [51] [49] [13] 
+2024-08-06 01:15:19 DEBUG IndikoServer:580 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806010831
+2024-08-06 01:15:19 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 1 (ASCII: 49)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:15:19 DEBUG IndikoServer:143 - Complete message received: 2P|1|2240801363|||K.SAGARIKA||||||||||||||||||||||||||||
+2024-08-06 01:15:19 DEBUG IndikoServer:561 - Received message to process: 2P|1|2240801363|||K.SAGARIKA||||||||||||||||||||||||||||
+2024-08-06 01:15:19 DEBUG IndikoServer:568 - ASCII sequence of received message: [50] [80] [124] [49] [124] [50] [50] [52] [48] [56] [48] [49] [51] [54] [51] [124] [124] [124] [75] [46] [83] [65] [71] [65] [82] [73] [75] [65] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [13] 
+2024-08-06 01:15:19 DEBUG IndikoServer:589 - Patient Record Received: 2P|1|2240801363|||K.SAGARIKA||||||||||||||||||||||||||||
+2024-08-06 01:15:19 DEBUG IndikoServer:592 - Patient Record Parsed: org.carecode.mw.lims.mw.indiko.PatientRecord@2e1ef60
+2024-08-06 01:15:19 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 7 (ASCII: 55)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 8 (ASCII: 56)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:15:19 DEBUG IndikoServer:143 - Complete message received: 3O|1|2240801363||^^^GLU^0.0|R||||||X||||1|||||||||1|F
+2024-08-06 01:15:19 DEBUG IndikoServer:561 - Received message to process: 3O|1|2240801363||^^^GLU^0.0|R||||||X||||1|||||||||1|F
+2024-08-06 01:15:19 DEBUG IndikoServer:568 - ASCII sequence of received message: [51] [79] [124] [49] [124] [50] [50] [52] [48] [56] [48] [49] [51] [54] [51] [124] [124] [94] [94] [94] [71] [76] [85] [94] [48] [46] [48] [124] [82] [124] [124] [124] [124] [124] [124] [88] [124] [124] [124] [124] [49] [124] [124] [124] [124] [124] [124] [124] [124] [124] [49] [124] [70] [13] 
+2024-08-06 01:15:19 DEBUG IndikoServer:594 - Result Record Received: 3O|1|2240801363||^^^GLU^0.0|R||||||X||||1|||||||||1|F
+2024-08-06 01:15:19 DEBUG IndikoServer:598 - Result Record Parsed: org.carecode.mw.lims.mw.indiko.ResultsRecord@1b7c473a
+2024-08-06 01:15:19 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 1 (ASCII: 49)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: C (ASCII: 67)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:15:19 DEBUG IndikoServer:143 - Complete message received: 4R|1|^^^GLU^0.0|109|mg/dl||N||F\R||Hafsa||20240805151657|Analyzer 1
+2024-08-06 01:15:19 DEBUG IndikoServer:561 - Received message to process: 4R|1|^^^GLU^0.0|109|mg/dl||N||F\R||Hafsa||20240805151657|Analyzer 1
+2024-08-06 01:15:19 DEBUG IndikoServer:568 - ASCII sequence of received message: [52] [82] [124] [49] [124] [94] [94] [94] [71] [76] [85] [94] [48] [46] [48] [124] [49] [48] [57] [124] [109] [103] [47] [100] [108] [124] [124] [78] [124] [124] [70] [92] [82] [124] [124] [72] [97] [102] [115] [97] [124] [124] [50] [48] [50] [52] [48] [56] [48] [53] [49] [53] [49] [54] [53] [55] [124] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [13] 
+2024-08-06 01:15:19 DEBUG IndikoServer:594 - Result Record Received: 4R|1|^^^GLU^0.0|109|mg/dl||N||F\R||Hafsa||20240805151657|Analyzer 1
+2024-08-06 01:15:19 DEBUG IndikoServer:598 - Result Record Parsed: org.carecode.mw.lims.mw.indiko.ResultsRecord@648c94da
+2024-08-06 01:15:19 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: F (ASCII: 70)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 8 (ASCII: 56)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:15:19 DEBUG IndikoServer:143 - Complete message received: 5L|1|N
+2024-08-06 01:15:19 DEBUG IndikoServer:561 - Received message to process: 5L|1|N
+2024-08-06 01:15:19 DEBUG IndikoServer:568 - ASCII sequence of received message: [53] [76] [124] [49] [124] [78] [13] 
+2024-08-06 01:15:19 DEBUG IndikoServer:602 - Termination Record Received: 5L|1|N
+2024-08-06 01:15:19 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 0 (ASCII: 48)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 8 (ASCII: 56)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:15:19 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:15:19 DEBUG IndikoServer:150 - EOT Received
+2024-08-06 01:15:19 DEBUG IndikoServer:230 - Starting Transmission to send test requests
+2024-08-06 01:15:19 DEBUG IndikoServer:233 - Sent ENQ
+2024-08-06 01:15:21 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:15:54 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 01:15:54 INFO  Indiko:28 - Loading settings...
+2024-08-06 01:15:55 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 01:15:55 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 01:15:55 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 01:15:55 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:16:39 DEBUG IndikoServer:125 - Received ENQ
+2024-08-06 01:16:39 DEBUG IndikoServer:128 - Sent ACK
+2024-08-06 01:16:39 DEBUG IndikoServer:143 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806010951
+2024-08-06 01:16:39 DEBUG IndikoServer:561 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806010951
+2024-08-06 01:16:39 DEBUG IndikoServer:568 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [54] [48] [49] [48] [57] [53] [49] [13] 
+2024-08-06 01:16:39 DEBUG IndikoServer:580 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806010951
+2024-08-06 01:16:39 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 4 (ASCII: 52)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:16:39 DEBUG IndikoServer:143 - Complete message received: 2P|1|2240801365|||K.D.MANEL||||||||||||||||||||||||||||
+2024-08-06 01:16:39 DEBUG IndikoServer:561 - Received message to process: 2P|1|2240801365|||K.D.MANEL||||||||||||||||||||||||||||
+2024-08-06 01:16:39 DEBUG IndikoServer:568 - ASCII sequence of received message: [50] [80] [124] [49] [124] [50] [50] [52] [48] [56] [48] [49] [51] [54] [53] [124] [124] [124] [75] [46] [68] [46] [77] [65] [78] [69] [76] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [124] [13] 
+2024-08-06 01:16:39 DEBUG IndikoServer:589 - Patient Record Received: 2P|1|2240801365|||K.D.MANEL||||||||||||||||||||||||||||
+2024-08-06 01:16:39 DEBUG IndikoServer:592 - Patient Record Parsed: org.carecode.mw.lims.mw.indiko.PatientRecord@2e1ef60
+2024-08-06 01:16:39 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 1 (ASCII: 49)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 6 (ASCII: 54)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:16:39 DEBUG IndikoServer:143 - Complete message received: 3O|1|2240801365||^^^GLU^0.0|R||||||X||||1|||||||||1|F
+2024-08-06 01:16:39 DEBUG IndikoServer:561 - Received message to process: 3O|1|2240801365||^^^GLU^0.0|R||||||X||||1|||||||||1|F
+2024-08-06 01:16:39 DEBUG IndikoServer:568 - ASCII sequence of received message: [51] [79] [124] [49] [124] [50] [50] [52] [48] [56] [48] [49] [51] [54] [53] [124] [124] [94] [94] [94] [71] [76] [85] [94] [48] [46] [48] [124] [82] [124] [124] [124] [124] [124] [124] [88] [124] [124] [124] [124] [49] [124] [124] [124] [124] [124] [124] [124] [124] [124] [49] [124] [70] [13] 
+2024-08-06 01:16:39 DEBUG IndikoServer:594 - Result Record Received: 3O|1|2240801365||^^^GLU^0.0|R||||||X||||1|||||||||1|F
+2024-08-06 01:16:39 DEBUG IndikoServer:598 - Result Record Parsed: org.carecode.mw.lims.mw.indiko.ResultsRecord@1b7c473a
+2024-08-06 01:16:39 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 1 (ASCII: 49)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:16:39 DEBUG IndikoServer:143 - Complete message received: 4R|1|^^^GLU^0.0|113|mg/dl||N||F\R||Hafsa||20240805152651|Analyzer 1
+2024-08-06 01:16:39 DEBUG IndikoServer:561 - Received message to process: 4R|1|^^^GLU^0.0|113|mg/dl||N||F\R||Hafsa||20240805152651|Analyzer 1
+2024-08-06 01:16:39 DEBUG IndikoServer:568 - ASCII sequence of received message: [52] [82] [124] [49] [124] [94] [94] [94] [71] [76] [85] [94] [48] [46] [48] [124] [49] [49] [51] [124] [109] [103] [47] [100] [108] [124] [124] [78] [124] [124] [70] [92] [82] [124] [124] [72] [97] [102] [115] [97] [124] [124] [50] [48] [50] [52] [48] [56] [48] [53] [49] [53] [50] [54] [53] [49] [124] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [13] 
+2024-08-06 01:16:39 DEBUG IndikoServer:594 - Result Record Received: 4R|1|^^^GLU^0.0|113|mg/dl||N||F\R||Hafsa||20240805152651|Analyzer 1
+2024-08-06 01:16:39 DEBUG IndikoServer:598 - Result Record Parsed: org.carecode.mw.lims.mw.indiko.ResultsRecord@648c94da
+2024-08-06 01:16:39 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:16:39 DEBUG IndikoServer:143 - Complete message received: 5L|1|N
+2024-08-06 01:16:39 DEBUG IndikoServer:561 - Received message to process: 5L|1|N
+2024-08-06 01:16:39 DEBUG IndikoServer:568 - ASCII sequence of received message: [53] [76] [124] [49] [124] [78] [13] 
+2024-08-06 01:16:39 DEBUG IndikoServer:602 - Termination Record Received: 5L|1|N
+2024-08-06 01:16:39 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 0 (ASCII: 48)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 8 (ASCII: 56)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:16:39 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:16:39 DEBUG IndikoServer:150 - EOT Received
+2024-08-06 01:16:39 DEBUG IndikoServer:230 - Starting Transmission to send test requests
+2024-08-06 01:16:39 DEBUG IndikoServer:233 - Sent ENQ
+2024-08-06 01:16:41 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:21:33 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 01:21:33 INFO  Indiko:28 - Loading settings...
+2024-08-06 01:21:34 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 01:21:34 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 01:21:34 ERROR IndikoServer:86 - Error starting server on port 10100
+java.net.BindException: Address already in use: NET_Bind
+	at java.net.PlainSocketImpl.bind0(Native Method) ~[?:?]
+	at java.net.PlainSocketImpl.socketBind(PlainSocketImpl.java:132) ~[?:?]
+	at java.net.AbstractPlainSocketImpl.bind(AbstractPlainSocketImpl.java:452) ~[?:?]
+	at java.net.ServerSocket.bind(ServerSocket.java:395) ~[?:?]
+	at java.net.ServerSocket.<init>(ServerSocket.java:257) ~[?:?]
+	at java.net.ServerSocket.<init>(ServerSocket.java:149) ~[?:?]
+	at org.carecode.mw.lims.mw.indiko.IndikoServer.start(IndikoServer.java:75) [classes/:?]
+	at org.carecode.mw.lims.mw.indiko.Indiko.main(Indiko.java:40) [classes/:?]
+2024-08-06 01:23:15 DEBUG IndikoServer:125 - Received ENQ
+2024-08-06 01:23:15 DEBUG IndikoServer:128 - Sent ACK
+2024-08-06 01:23:15 DEBUG IndikoServer:143 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806011627
+2024-08-06 01:23:15 DEBUG IndikoServer:561 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806011627
+2024-08-06 01:23:15 DEBUG IndikoServer:568 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [54] [48] [49] [49] [54] [50] [55] [13] 
+2024-08-06 01:23:15 DEBUG IndikoServer:580 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806011627
+2024-08-06 01:23:15 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character: 5 (ASCII: 53)
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:23:15 DEBUG IndikoServer:143 - Complete message received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:23:15 DEBUG IndikoServer:561 - Received message to process: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:23:15 DEBUG IndikoServer:568 - ASCII sequence of received message: [50] [81] [124] [49] [124] [94] [50] [50] [52] [48] [56] [48] [49] [51] [57] [56] [94] [94] [124] [124] [94] [94] [94] [65] [76] [76] [94] [124] [124] [124] [124] [124] [124] [124] [124] [79] [13] 
+2024-08-06 01:23:15 DEBUG IndikoServer:584 - Query Record Received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:23:15 DEBUG IndikoServer:587 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@535779e4
+2024-08-06 01:23:15 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character: 5 (ASCII: 53)
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character: 3 (ASCII: 51)
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:23:15 DEBUG IndikoServer:143 - Complete message received: 3L|1|N
+2024-08-06 01:23:15 DEBUG IndikoServer:561 - Received message to process: 3L|1|N
+2024-08-06 01:23:15 DEBUG IndikoServer:568 - ASCII sequence of received message: [51] [76] [124] [49] [124] [78] [13] 
+2024-08-06 01:23:15 DEBUG IndikoServer:602 - Termination Record Received: 3L|1|N
+2024-08-06 01:23:15 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character: 0 (ASCII: 48)
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character: 6 (ASCII: 54)
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:23:15 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:23:15 DEBUG IndikoServer:150 - EOT Received
+2024-08-06 01:23:15 DEBUG IndikoServer:230 - Starting Transmission to send test requests
+2024-08-06 01:23:15 DEBUG IndikoServer:233 - Sent ENQ
+2024-08-06 01:23:17 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:24:58 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 01:24:58 INFO  Indiko:28 - Loading settings...
+2024-08-06 01:24:58 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 01:24:58 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 01:24:58 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 01:24:59 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:26:00 DEBUG IndikoServer:125 - Received ENQ
+2024-08-06 01:26:00 DEBUG IndikoServer:128 - Sent ACK
+2024-08-06 01:26:00 DEBUG IndikoServer:143 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806011912
+2024-08-06 01:26:00 DEBUG IndikoServer:563 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806011912
+2024-08-06 01:26:00 DEBUG IndikoServer:570 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [54] [48] [49] [49] [57] [49] [50] [13] 
+2024-08-06 01:26:00 DEBUG IndikoServer:582 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806011912
+2024-08-06 01:26:00 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character: 2 (ASCII: 50)
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:26:00 DEBUG IndikoServer:143 - Complete message received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:26:00 DEBUG IndikoServer:563 - Received message to process: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:26:00 DEBUG IndikoServer:570 - ASCII sequence of received message: [50] [81] [124] [49] [124] [94] [50] [50] [52] [48] [56] [48] [49] [51] [57] [56] [94] [94] [124] [124] [94] [94] [94] [65] [76] [76] [94] [124] [124] [124] [124] [124] [124] [124] [124] [79] [13] 
+2024-08-06 01:26:00 DEBUG IndikoServer:586 - Query Record Received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:26:00 DEBUG IndikoServer:589 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@2e1ef60
+2024-08-06 01:26:00 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character: 5 (ASCII: 53)
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character: 3 (ASCII: 51)
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:26:00 DEBUG IndikoServer:143 - Complete message received: 3L|1|N
+2024-08-06 01:26:00 DEBUG IndikoServer:563 - Received message to process: 3L|1|N
+2024-08-06 01:26:00 DEBUG IndikoServer:570 - ASCII sequence of received message: [51] [76] [124] [49] [124] [78] [13] 
+2024-08-06 01:26:00 DEBUG IndikoServer:604 - Termination Record Received: 3L|1|N
+2024-08-06 01:26:00 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character: 0 (ASCII: 48)
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character: 6 (ASCII: 54)
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:26:00 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:26:00 DEBUG IndikoServer:150 - EOT Received
+2024-08-06 01:26:00 DEBUG IndikoServer:229 - Handling eot
+2024-08-06 01:26:00 DEBUG IndikoServer:230 - true
+2024-08-06 01:26:00 DEBUG IndikoServer:232 - Starting Transmission to send test requests
+2024-08-06 01:26:00 DEBUG IndikoServer:235 - Sent ENQ
+2024-08-06 01:26:02 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:29:49 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 01:29:49 INFO  Indiko:28 - Loading settings...
+2024-08-06 01:29:49 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 01:29:49 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 01:29:49 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 01:29:50 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:30:51 DEBUG IndikoServer:125 - Received ENQ
+2024-08-06 01:30:51 DEBUG IndikoServer:128 - Sent ACK
+2024-08-06 01:30:51 DEBUG IndikoServer:143 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806012403
+2024-08-06 01:30:51 DEBUG IndikoServer:563 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806012403
+2024-08-06 01:30:51 DEBUG IndikoServer:570 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [54] [48] [49] [50] [52] [48] [51] [13] 
+2024-08-06 01:30:51 DEBUG IndikoServer:582 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806012403
+2024-08-06 01:30:51 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character: D (ASCII: 68)
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:30:51 DEBUG IndikoServer:143 - Complete message received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:30:51 DEBUG IndikoServer:563 - Received message to process: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:30:51 DEBUG IndikoServer:570 - ASCII sequence of received message: [50] [81] [124] [49] [124] [94] [50] [50] [52] [48] [56] [48] [49] [51] [57] [56] [94] [94] [124] [124] [94] [94] [94] [65] [76] [76] [94] [124] [124] [124] [124] [124] [124] [124] [124] [79] [13] 
+2024-08-06 01:30:51 DEBUG IndikoServer:586 - Query Record Received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:30:51 DEBUG IndikoServer:589 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@2e1ef60
+2024-08-06 01:30:51 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character: 5 (ASCII: 53)
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character: 3 (ASCII: 51)
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:30:51 DEBUG IndikoServer:143 - Complete message received: 3L|1|N
+2024-08-06 01:30:51 DEBUG IndikoServer:563 - Received message to process: 3L|1|N
+2024-08-06 01:30:51 DEBUG IndikoServer:570 - ASCII sequence of received message: [51] [76] [124] [49] [124] [78] [13] 
+2024-08-06 01:30:51 DEBUG IndikoServer:604 - Termination Record Received: 3L|1|N
+2024-08-06 01:30:51 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character: 0 (ASCII: 48)
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character: 6 (ASCII: 54)
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:30:51 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:30:51 DEBUG IndikoServer:150 - EOT Received
+2024-08-06 01:30:51 DEBUG IndikoServer:229 - Handling eot
+2024-08-06 01:30:51 DEBUG IndikoServer:230 - true
+2024-08-06 01:30:51 DEBUG IndikoServer:232 - Starting Transmission to send test requests
+2024-08-06 01:30:51 DEBUG IndikoServer:235 - Sent ENQ
+2024-08-06 01:30:51 DEBUG IndikoServer:131 - ACK Received.
+2024-08-06 01:30:51 DEBUG IndikoServer:168 - Sending Header
+2024-08-06 01:30:51 DEBUG IndikoServer:171 - 1H|\^&|||1^LIS host^1.0|||||||P
+2024-08-06 01:30:51 DEBUG IndikoServer:269 - Message ASCII Values: [2] [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [76] [73] [83] [32] [104] [111] [115] [116] [94] [49] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [3] [51] [70] [13] [10] 
+2024-08-06 01:30:51 DEBUG IndikoServer:270 - Built message with checksum: 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:30:51 DEBUG IndikoServer:173 - 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:30:51 DEBUG IndikoServer:257 - Response sent: 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:30:51 DEBUG IndikoServer:179 - Sent 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:30:51 DEBUG IndikoServer:156 - Received unexpected data:  (ASCII: 21)
+2024-08-06 01:50:07 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 01:50:07 INFO  Indiko:28 - Loading settings...
+2024-08-06 01:50:07 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 01:50:07 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 01:50:07 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 01:50:07 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:51:01 DEBUG IndikoServer:125 - Received ENQ
+2024-08-06 01:51:01 DEBUG IndikoServer:128 - Sent ACK
+2024-08-06 01:51:01 DEBUG IndikoServer:143 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806014413
+2024-08-06 01:51:01 DEBUG IndikoServer:568 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806014413
+2024-08-06 01:51:01 DEBUG IndikoServer:575 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [54] [48] [49] [52] [52] [49] [51] [13] 
+2024-08-06 01:51:01 DEBUG IndikoServer:587 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806014413
+2024-08-06 01:51:01 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character: E (ASCII: 69)
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character: 1 (ASCII: 49)
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:51:01 DEBUG IndikoServer:143 - Complete message received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:51:01 DEBUG IndikoServer:568 - Received message to process: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:51:01 DEBUG IndikoServer:575 - ASCII sequence of received message: [50] [81] [124] [49] [124] [94] [50] [50] [52] [48] [56] [48] [49] [51] [57] [56] [94] [94] [124] [124] [94] [94] [94] [65] [76] [76] [94] [124] [124] [124] [124] [124] [124] [124] [124] [79] [13] 
+2024-08-06 01:51:01 DEBUG IndikoServer:591 - Query Record Received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:51:01 DEBUG IndikoServer:594 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@2e1ef60
+2024-08-06 01:51:01 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character: 5 (ASCII: 53)
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character: 3 (ASCII: 51)
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:51:01 DEBUG IndikoServer:143 - Complete message received: 3L|1|N
+2024-08-06 01:51:01 DEBUG IndikoServer:568 - Received message to process: 3L|1|N
+2024-08-06 01:51:01 DEBUG IndikoServer:575 - ASCII sequence of received message: [51] [76] [124] [49] [124] [78] [13] 
+2024-08-06 01:51:01 DEBUG IndikoServer:609 - Termination Record Received: 3L|1|N
+2024-08-06 01:51:01 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character: 0 (ASCII: 48)
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character: 6 (ASCII: 54)
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:51:01 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:51:01 DEBUG IndikoServer:150 - EOT Received
+2024-08-06 01:51:01 DEBUG IndikoServer:240 - Handling eot
+2024-08-06 01:51:01 DEBUG IndikoServer:241 - true
+2024-08-06 01:51:01 DEBUG IndikoServer:243 - Starting Transmission to send test requests
+2024-08-06 01:51:01 DEBUG IndikoServer:246 - Sent ENQ
+2024-08-06 01:51:01 DEBUG IndikoServer:131 - ACK Received.
+2024-08-06 01:51:01 DEBUG IndikoServer:168 - Sending Header
+2024-08-06 01:51:01 DEBUG IndikoServer:171 - 1H|\^&|||1^LIS host^1.0|||||||P
+2024-08-06 01:51:01 DEBUG IndikoServer:173 - 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:51:01 DEBUG IndikoServer:233 - Response sent: 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:51:01 DEBUG IndikoServer:179 - Sent 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:51:01 DEBUG IndikoServer:156 - Received unexpected data:  (ASCII: 21)
+2024-08-06 01:55:52 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-06 01:55:53 INFO  Indiko:28 - Loading settings...
+2024-08-06 01:55:53 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-06 01:55:53 INFO  Indiko:30 - Settings loaded successfully.
+2024-08-06 01:55:53 INFO  IndikoServer:76 - Server started on port 10100
+2024-08-06 01:55:53 INFO  IndikoServer:79 - New client connected: 172.16.241.12
+2024-08-06 01:56:51 DEBUG IndikoServer:125 - Received ENQ
+2024-08-06 01:56:51 DEBUG IndikoServer:128 - Sent ACK
+2024-08-06 01:56:51 DEBUG IndikoServer:143 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806015003
+2024-08-06 01:56:51 DEBUG IndikoServer:570 - Received message to process: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806015003
+2024-08-06 01:56:51 DEBUG IndikoServer:577 - ASCII sequence of received message: [49] [72] [124] [92] [94] [38] [124] [124] [124] [49] [94] [65] [110] [97] [108] [121] [122] [101] [114] [32] [49] [94] [55] [46] [48] [124] [124] [124] [124] [124] [124] [124] [80] [124] [124] [50] [48] [50] [52] [48] [56] [48] [54] [48] [49] [53] [48] [48] [51] [13] 
+2024-08-06 01:56:51 DEBUG IndikoServer:589 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240806015003
+2024-08-06 01:56:51 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character: D (ASCII: 68)
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character: D (ASCII: 68)
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:56:51 DEBUG IndikoServer:143 - Complete message received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:56:51 DEBUG IndikoServer:570 - Received message to process: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:56:51 DEBUG IndikoServer:577 - ASCII sequence of received message: [50] [81] [124] [49] [124] [94] [50] [50] [52] [48] [56] [48] [49] [51] [57] [56] [94] [94] [124] [124] [94] [94] [94] [65] [76] [76] [94] [124] [124] [124] [124] [124] [124] [124] [124] [79] [13] 
+2024-08-06 01:56:51 DEBUG IndikoServer:593 - Query Record Received: 2Q|1|^2240801398^^||^^^ALL^||||||||O
+2024-08-06 01:56:51 DEBUG IndikoServer:596 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@2e1ef60
+2024-08-06 01:56:51 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character: 5 (ASCII: 53)
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character: 3 (ASCII: 51)
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:56:51 DEBUG IndikoServer:143 - Complete message received: 3L|1|N
+2024-08-06 01:56:51 DEBUG IndikoServer:570 - Received message to process: 3L|1|N
+2024-08-06 01:56:51 DEBUG IndikoServer:577 - ASCII sequence of received message: [51] [76] [124] [49] [124] [78] [13] 
+2024-08-06 01:56:51 DEBUG IndikoServer:611 - Termination Record Received: 3L|1|N
+2024-08-06 01:56:51 DEBUG IndikoServer:147 - Sent ACK after STX-ETX block
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character: 0 (ASCII: 48)
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character: 6 (ASCII: 54)
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character:  (ASCII: 13)
+2024-08-06 01:56:51 DEBUG IndikoServer:114 - Checksum or trailing character: 
+ (ASCII: 10)
+2024-08-06 01:56:51 DEBUG IndikoServer:150 - EOT Received
+2024-08-06 01:56:51 DEBUG IndikoServer:240 - Handling eot
+2024-08-06 01:56:51 DEBUG IndikoServer:241 - true
+2024-08-06 01:56:51 DEBUG IndikoServer:243 - Starting Transmission to send test requests
+2024-08-06 01:56:51 DEBUG IndikoServer:246 - Sent ENQ
+2024-08-06 01:56:52 DEBUG IndikoServer:131 - ACK Received.
+2024-08-06 01:56:52 DEBUG IndikoServer:168 - Sending Header
+2024-08-06 01:56:52 DEBUG IndikoServer:171 - 1H|\^&|||1^LIS host^1.0|||||||P
+2024-08-06 01:56:52 DEBUG IndikoServer:173 - 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:56:52 DEBUG IndikoServer:233 - Response sent: 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:56:52 DEBUG IndikoServer:179 - Sent 1H|\^&|||1^LIS host^1.0|||||||P3F
+
+2024-08-06 01:56:52 DEBUG IndikoServer:156 - Received unexpected data:  (ASCII: 21)
