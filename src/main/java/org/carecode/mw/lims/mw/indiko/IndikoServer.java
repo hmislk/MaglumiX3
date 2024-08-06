@@ -169,7 +169,7 @@ public class IndikoServer {
             String hm = createLimsHeaderRecord();
             String checksum = calculateChecksum(hm);
             logger.debug(hm);
-            String shm = buildMessageWithChecksum(hm);
+            String shm = buildASTMMessage(hm);
             logger.debug(shm);
             sendResponse(shm, clientSocket);
 
@@ -187,7 +187,7 @@ public class IndikoServer {
             String pm = createLimsPatientRecord(patientRecord);
             logger.debug("Sent " + pm);
             String checksum = calculateChecksum(pm);
-            String spm = buildMessageWithChecksum(pm);
+            String spm = buildASTMMessage(pm);
             sendResponse(spm, clientSocket);
             frameNumber = 3;
             needToSendPatientRecordForQuery = false;
@@ -201,7 +201,7 @@ public class IndikoServer {
             orderRecord.setFrameNumber(frameNumber);
             String om = createLimsOrderRecord(orderRecord);
             String checksum = calculateChecksum(om);
-            String som = buildMessageWithChecksum(om);
+            String som = buildASTMMessage(om);
             sendResponse(som, clientSocket);
             frameNumber = 4;
             needToSendOrderingRecordForQuery = false;
@@ -210,7 +210,7 @@ public class IndikoServer {
         } else if (needToSendEotForRecordForQuery) {
             String tmq = createLimsTerminationRecord(frameNumber, terminationCode);
             String checksum = calculateChecksum(tmq);
-            String qtmq = buildMessageWithChecksum(tmq);
+            String qtmq = buildASTMMessage(tmq);
             sendResponse(qtmq, clientSocket);
             needToSendEotForRecordForQuery = false;
             receivingQuery = false;
@@ -251,33 +251,39 @@ public class IndikoServer {
         }
     }
 
-    public String calculateChecksum(String input) {
+// Calculate checksum based on message content, assuming STX and ETX are part of the transmission but not included in checksum calculation
+    public String calculateChecksum(String message) {
         int checksumValue = 0;
-        for (char c : input.toCharArray()) {
+        for (char c : message.toCharArray()) {
             checksumValue += (int) c;
         }
-        checksumValue %= 256;
-        return String.format("%02X", checksumValue);
+        checksumValue %= 256; // Modulo 256 for one-byte checksum
+        String checksumHex = String.format("%02X", checksumValue); // Convert to two-digit hexadecimal string
+        logger.info("Calculated Checksum: " + checksumHex + " for message: " + message);
+        return checksumHex;
     }
 
-    public String buildMessageWithChecksum(String message) {
-        // Include STX and ETX in the message for checksum calculation
-        String fullMessage = STX + message + ETX;
-        String checksum = calculateChecksum(message);  // Calculate checksum on the message without STX and ETX
-        return fullMessage + checksum + CR + LF;  // Append checksum and termination characters
+    // Build the complete ASTM message
+    public String buildASTMMessage(String content) {
+        logger.info("Building message for content: " + content);
+        String checksum = calculateChecksum(content);
+        String fullMessage = STX + content + ETX + checksum + CR + LF;
+        logger.info("Full ASTM Message: " + fullMessage);
+        return fullMessage;
     }
 
+    // Example method to create and send a header message
     public String createHeaderMessage() {
         String headerContent = "1H|^&|||1^LIS host^1.0|||||||P|";
-        return buildMessageWithChecksum(headerContent);
+        logger.info("Creating header message");
+        return buildASTMMessage(headerContent);
     }
 
-
+    // Method to send the message to the analyzer
     public void sendToAnalyzer(String message, OutputStream outputStream) throws IOException {
         outputStream.write(message.getBytes());
         outputStream.flush();
-    }
-//  
+    }//  
 //    private void handleClientTest(Socket clientSocket) {
 //
 //        try (InputStream in = new BufferedInputStream(clientSocket.getInputStream()); OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream())) {
