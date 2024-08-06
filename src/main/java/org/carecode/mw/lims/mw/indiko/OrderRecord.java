@@ -77,20 +77,23 @@ public class OrderRecord {
     }
 
     public String getOrderDateTimeStr() {
+        orderDateTimeStr = dateFormat.format(getOrderDateTime()); 
         return orderDateTimeStr;
     }
 
-    // Directly set the Date object and update the formatted string
-    public void setOrderDateTime(Date orderDateTime) {
-        this.orderDateTime = orderDateTime;
-        this.orderDateTimeStr = dateFormat.format(orderDateTime); // Automatically update the string representation
-    }
-
+    
     public String getTestInformation() {
         return testInformation;
     }
 
     public void setTestInformation(String testInformation) {
         this.testInformation = testInformation;
+    }
+
+    public Date getOrderDateTime() {
+        if(orderDateTime==null){
+            orderDateTime=new Date();
+        }
+        return orderDateTime;
     }
 }

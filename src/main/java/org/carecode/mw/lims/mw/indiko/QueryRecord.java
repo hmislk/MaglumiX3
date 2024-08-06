@@ -13,6 +13,7 @@ public class QueryRecord {
 
     // Constructor
     public QueryRecord(int frameNumber, String sampleId, String universalTestId, String queryType) {
+        System.out.println("sampleId = " + sampleId);
         this.frameNumber = frameNumber;
         this.sampleId = sampleId;
         this.universalTestId = universalTestId;
