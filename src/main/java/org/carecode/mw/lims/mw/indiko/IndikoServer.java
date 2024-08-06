@@ -49,19 +49,8 @@ public class IndikoServer {
     PatientDataBundle patientDataBundle = new PatientDataBundle();
 
     String patientId;
-    String sampleId;
-    String patientName;
-    String referringDocName;
     List<String> testNames;
-    String specimanCode = "S";
-    String testInformation = "";
     int frameNumber;
-    String limsName;
-    String senderId;
-    String processingId;
-    String versionNumber;
-    String patientSex;
-    Date sampledDate;
     char terminationCode = 'N';
     PatientRecord patientRecord;
     ResultsRecord resultRecord;
@@ -102,7 +91,7 @@ public class IndikoServer {
 
     private void handleClient(Socket clientSocket) {
         try (InputStream in = new BufferedInputStream(clientSocket.getInputStream()); OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream())) {
-
+            StringBuilder asciiDebugInfo = new StringBuilder();
             boolean sessionActive = true;
             boolean inChecksum = false;
             int checksumCount = 0;
@@ -112,10 +101,13 @@ public class IndikoServer {
 
                 if (inChecksum) {
                     logger.debug("Checksum or trailing character: " + (char) data + " (ASCII: " + data + ")");
+                    asciiDebugInfo.append((char) data).append(" (").append(data).append(") ");  // Append character and its ASCII value
                     checksumCount++;
                     if (checksumCount == 4) {
                         inChecksum = false;
                         checksumCount = 0;
+                        logger.debug("ASCII sequence for checksum calculation: " + asciiDebugInfo.toString());  // Output the full ASCII sequence used for checksum
+                        asciiDebugInfo.setLength(0);  // Clear the StringBuilder for the next use
                     }
                     continue;
                 }
@@ -134,13 +126,17 @@ public class IndikoServer {
                     case STX:
                         inChecksum = true;
                         StringBuilder message = new StringBuilder();
+                        asciiDebugInfo = new StringBuilder();  // To store ASCII values for debugging
+
                         while ((data = in.read()) != ETX) {
                             if (data == -1) {
                                 break;
                             }
                             message.append((char) data);
+                            asciiDebugInfo.append("[").append(data).append("] ");  // Append ASCII value in brackets
                         }
                         logger.debug("Complete message received: " + message);
+                        logger.debug("ASCII values of message: " + asciiDebugInfo.toString());  // Log ASCII values separately
                         processMessage(message.toString(), clientSocket);
                         out.write(ACK);
                         out.flush();
@@ -153,7 +149,13 @@ public class IndikoServer {
                         break;
                     default:
                         if (!inChecksum) {
+                            // Log the unexpected character and its ASCII value
                             logger.debug("Received unexpected data: " + (char) data + " (ASCII: " + data + ")");
+                            // Optionally accumulate unexpected characters in a StringBuilder for review later or within the same connection session
+                            asciiDebugInfo.append((char) data).append(" (").append(data).append(") ");
+                        } else {
+                            // If inside checksum calculation, you might want to handle this differently or just continue
+                            logger.debug("Data within checksum calculation: " + (char) data + " (ASCII: " + data + ")");
                         }
                         break;
                 }
@@ -167,16 +169,10 @@ public class IndikoServer {
         if (needToSendHeaderRecordForQuery) {
             logger.debug("Sending Header");
             String hm = createLimsHeaderRecord();
-            String checksum = calculateChecksum(hm);
-            logger.debug(hm);
-            String shm = buildASTMMessage(hm);
-            logger.debug(shm);
-            sendResponse(shm, clientSocket);
-
+            sendResponse(hm, clientSocket);
             frameNumber = 2;
             needToSendHeaderRecordForQuery = false;
             needToSendPatientRecordForQuery = true;
-            logger.debug("Sent " + shm);
         } else if (needToSendPatientRecordForQuery) {
             logger.debug("Creating Patient record ");
             patientRecord = patientDataBundle.getPatientRecord();
@@ -185,14 +181,10 @@ public class IndikoServer {
             }
             patientRecord.setFrameNumber(frameNumber);
             String pm = createLimsPatientRecord(patientRecord);
-            logger.debug("Sent " + pm);
-            String checksum = calculateChecksum(pm);
-            String spm = buildASTMMessage(pm);
-            sendResponse(spm, clientSocket);
+            sendResponse(pm, clientSocket);
             frameNumber = 3;
             needToSendPatientRecordForQuery = false;
             needToSendOrderingRecordForQuery = true;
-            logger.debug("Sent " + spm);
         } else if (needToSendOrderingRecordForQuery) {
             if (testNames == null || testNames.isEmpty()) {
                 testNames = Arrays.asList("Gluc GP");
@@ -200,24 +192,18 @@ public class IndikoServer {
             orderRecord = patientDataBundle.getOrderRecords().get(0);
             orderRecord.setFrameNumber(frameNumber);
             String om = createLimsOrderRecord(orderRecord);
-            String checksum = calculateChecksum(om);
-            String som = buildASTMMessage(om);
-            sendResponse(som, clientSocket);
+            sendResponse(om, clientSocket);
             frameNumber = 4;
             needToSendOrderingRecordForQuery = false;
             needToSendEotForRecordForQuery = true;
-            logger.debug("Sent " + som);
         } else if (needToSendEotForRecordForQuery) {
             String tmq = createLimsTerminationRecord(frameNumber, terminationCode);
-            String checksum = calculateChecksum(tmq);
-            String qtmq = buildASTMMessage(tmq);
-            sendResponse(qtmq, clientSocket);
+            sendResponse(tmq, clientSocket);
             needToSendEotForRecordForQuery = false;
             receivingQuery = false;
             receivingResults = false;
             respondingQuery = false;
             respondingResults = false;
-            logger.debug("Sent " + qtmq);
         } else {
             out.write(EOT);
             out.flush();
@@ -226,9 +212,10 @@ public class IndikoServer {
     }
 
     private void sendResponse(String response, Socket clientSocket) {
+        String astmMessage = buildASTMMessage(response);
         try {
             OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream());
-            out.write(response.getBytes());
+            out.write(astmMessage.getBytes());
             out.flush();
             logger.debug("Response sent: " + response);
         } catch (IOException e) {
@@ -251,197 +238,52 @@ public class IndikoServer {
         }
     }
 
-// Calculate checksum based on message content, assuming STX and ETX are part of the transmission but not included in checksum calculation
-    public String calculateChecksum(String message) {
-        int checksumValue = 0;
-        for (char c : message.toCharArray()) {
-            checksumValue += (int) c;
+    public static String calculateChecksum(String frame) {
+        String checksum = "00";
+        int sumOfChars = 0;
+        boolean complete = false;
+
+        for (int idx = 0; idx < frame.length(); idx++) {
+            int byteVal = frame.charAt(idx);
+
+            switch (byteVal) {
+                case 0x02: // STX
+                    sumOfChars = 0;
+                    break;
+                case 0x03: // ETX
+                case 0x17: // ETB
+                    sumOfChars += byteVal;
+                    complete = true;
+                    break;
+                default:
+                    sumOfChars += byteVal;
+                    break;
+            }
+
+            if (complete) {
+                break;
+            }
         }
-        checksumValue %= 256; // Modulo 256 for one-byte checksum
-        String checksumHex = String.format("%02X", checksumValue); // Convert to two-digit hexadecimal string
-        logger.info("Calculated Checksum: " + checksumHex + " for message: " + message);
-        return checksumHex;
+
+        if (sumOfChars > 0) {
+            checksum = Integer.toHexString(sumOfChars % 256).toUpperCase();
+            return (checksum.length() == 1 ? "0" + checksum : checksum);
+        }
+
+        return checksum;
     }
 
-    // Build the complete ASTM message
-    public String buildASTMMessage(String content) {
-        logger.info("Building message for content: " + content);
-        String checksum = calculateChecksum(content);
-        String fullMessage = STX + content + ETX + checksum + CR + LF;
-        logger.info("Full ASTM Message: " + fullMessage);
-        return fullMessage;
-    }
-
-    // Example method to create and send a header message
     public String createHeaderMessage() {
-        String headerContent = "1H|^&|||1^LIS host^1.0|||||||P|";
-        logger.info("Creating header message");
-        return buildASTMMessage(headerContent);
+        String headerContent = "1H|^&|||1^CareCode^1.0|||||||P|";
+        return headerContent;
     }
 
-    // Method to send the message to the analyzer
-    public void sendToAnalyzer(String message, OutputStream outputStream) throws IOException {
-        outputStream.write(message.getBytes());
-        outputStream.flush();
-    }//  
-//    private void handleClientTest(Socket clientSocket) {
-//
-//        try (InputStream in = new BufferedInputStream(clientSocket.getInputStream()); OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream())) {
-//
-//            out.write(ENQ);
-//            out.flush();
-//
-//            logger.debug("ENQ sent");
-//            testing = true;
-//
-//            boolean sessionActive = true;
-//            boolean inChecksum = false; // Flag to determine if we are currently reading checksum characters
-//            int checksumCount = 0; // Counter for the checksum characters
-//
-//            while (sessionActive) {
-//                int data = in.read();
-//
-//                if (inChecksum) {
-//                    // Log both the character and its ASCII value for clarity
-//                    logger.debug("Checksum or trailing character: " + (char) data + " (ASCII: " + data + ")");
-//                    checksumCount++;
-//                    if (checksumCount == 4) { // After reading two checksum characters, and CR, LF reset
-//                        inChecksum = false;
-//                        checksumCount = 0;
-//                    }
-//                    continue;
-//                }
-//
-//                switch (data) {
-//                    case ENQ:
-//                        logger.debug("Received ENQ");
-//                        out.write(ACK);
-//                        out.flush();
-//                        logger.debug("Sent ACK");
-//                        break;
-//                    case NAK:
-//                        logger.debug("NAK Received. Terminating");
-//                        System.exit(0);
-//                    case ACK:
-//                        logger.debug("ACK Received.");
-//                        if (testing) {
-//                            String hm = createLimsHeaderRecord();
-//                            String checksum = calculateChecksum(hm);
-//                            logger.debug(hm);
-//                            String shm = buildMessageWithChecksum(hm,checksum);
-//                            logger.debug(shm);
-//                            sendResponse(shm, clientSocket);
-//                            if (frameNumber > 1) {
-//                                logger.debug("Header Sending Finished. Terminating");
-//                                System.exit(0);
-//                            }
-//                            frameNumber = 2;
-//                            logger.debug("Sent " + shm);
-//                        } else if (needToSendHeaderRecordForQuery) {
-//                            logger.debug("Sending Header");
-//                            limsName = "CareCode";
-//                            senderId = "1101";
-//                            processingId = "22";
-//                            versionNumber = "33";
-//                            String hm = createExactLimsHeader();
-//                            //(limsName, senderId, processingId, versionNumber);
-//                            logger.debug(hm);
-//                            String checksum = calculateChecksum(hm);
-//                            String shm = buildMessageWithChecksum(hm,checksum);
-//                            logger.debug(shm);
-//                            sendResponse(shm, clientSocket);
-//                            frameNumber = 2;
-//                            needToSendHeaderRecordForQuery = false;
-//                            needToSendPatientRecordForQuery = true;
-//                            logger.debug("Sent " + shm);
-//                        } else if (needToSendPatientRecordForQuery) {
-//                            logger.debug("Creating Patient record ");
-//                            patientRecord = patientDataBundle.getPatientRecord();
-//                            if (patientRecord.getPatientName() == null) {
-//                                patientRecord.setPatientName("Buddhika");
-//                            }
-//                            patientRecord.setFrameNumber(frameNumber);
-//                            String pm = createLimsPatientRecord(patientRecord);
-//                            logger.debug("Sent " + pm);
-//                            String checksum = calculateChecksum(pm);
-//                            String spm = buildMessageWithChecksum(pm,checksum);
-//                            sendResponse(spm, clientSocket);
-//                            frameNumber = 3;
-//                            needToSendPatientRecordForQuery = false;
-//                            needToSendOrderingRecordForQuery = true;
-//                            logger.debug("Sent " + spm);
-//                        } else if (needToSendOrderingRecordForQuery) {
-//                            if (testNames == null || testNames.isEmpty()) {
-//                                testNames = Arrays.asList("Gluc GP");
-//                            }
-//                            orderRecord = patientDataBundle.getOrderRecords().get(0);
-//                            orderRecord.setFrameNumber(frameNumber);
-//                            String om = createLimsOrderRecord(orderRecord);
-//                            String checksum = calculateChecksum(om);
-//                            String som = buildMessageWithChecksum(om, checksum);
-//                            sendResponse(som, clientSocket);
-//                            frameNumber = 4;
-//                            needToSendOrderingRecordForQuery = false;
-//                            needToSendEotForRecordForQuery = true;
-//                            logger.debug("Sent " + som);
-//                        } else if (needToSendEotForRecordForQuery) {
-//                            String tmq = createLimsTerminationRecord(frameNumber, terminationCode);
-//                            String checksum = calculateChecksum(tmq);
-//                            String qtmq = buildMessageWithChecksum(tmq, checksum);
-//                            sendResponse(qtmq, clientSocket);
-//                            needToSendEotForRecordForQuery = false;
-//                            receivingQuery = false;
-//                            receivingResults = false;
-//                            respondingQuery = false;
-//                            respondingResults = false;
-//                            logger.debug("Sent " + qtmq);
-//                        } else {
-//                            out.write(EOT);
-//                            out.flush();
-//                            logger.debug("Sent EOT");
-//                        }
-//                        break;
-//                    case STX:
-//                        inChecksum = true; // Set to start checksum detection
-//                        StringBuilder message = new StringBuilder();
-//                        while ((data = in.read()) != ETX) {
-//                            if (data == -1) {
-//                                break;
-//                            }
-//                            message.append((char) data);
-//                        }
-//                        logger.debug("Complete message received: " + message);
-//                        processMessage(message.toString(), clientSocket);
-//                        out.write(ACK);
-//                        out.flush();
-//                        logger.debug("Sent ACK after STX-ETX block");
-//                        break;
-//                    case EOT:
-//                        logger.debug("EOT Received");
-//                        if (respondingQuery) {
-//                            logger.debug("Starting Transmission to send test requests");
-//                            out.write(ENQ);
-//                            out.flush();
-//                            logger.debug("Sent ENQ");
-//                            break;
-//                        } else if (respondingResults) {
-//                            LISCommunicator.pushResults(patientDataBundle);
-//                        } else {
-//                            sessionActive = false;
-//                            logger.debug("Received EOT, ending session");
-//                        }
-//                        break;
-//                    default:
-//                        if (!inChecksum) { // Ignore unexpected data if not in checksum reading mode
-//                            logger.debug("Received unexpected data: " + (char) data + " (ASCII: " + data + ")");
-//                        }
-//                        break;
-//                }
-//            }
-//        } catch (IOException e) {
-//            logger.error("Error during client communication", e);
-//        }
-//    }
+    public String buildASTMMessage(String content) {
+        String msdWithStartAndEnd = STX + content + CR + ETX;
+        String checksum = calculateChecksum(msdWithStartAndEnd);
+        String completeMsg = msdWithStartAndEnd + checksum + CR + LF;
+        return completeMsg;
+    }
 
     public String createExactLimsHeader() {
         // Initialize StringBuilder for assembling the header
@@ -573,7 +415,7 @@ public class IndikoServer {
 
     private void processMessage(String data, Socket clientSocket) {
         // Logging the received data for debugging
-        logger.debug("Received message to process: " + data);
+//        logger.debug("Received message to process: " + data);
 
         // Log ASCII values of each character in the received data
         StringBuilder asciiDebugInfo = new StringBuilder("ASCII sequence of received message: ");
@@ -620,39 +462,6 @@ public class IndikoServer {
         }
     }
 
-//    private String buildMessageWithChecksum(String message, String checkSum) {
-//        String formattedMessage = (char) STX + message + (char) ETX + checkSum + (char) CR + (char) LF;
-//        StringBuilder asciiDebugInfo = new StringBuilder("Message ASCII Values: ");
-//        for (char c : formattedMessage.toCharArray()) {
-//            asciiDebugInfo.append("[").append((int) c).append("] ");
-//        }
-//        logger.debug(asciiDebugInfo.toString());
-//        logger.debug("Built message with checksum: " + formattedMessage);
-//        return formattedMessage;
-//    }
-//    private String buildMessageWithChecksum(String message) {
-//        int checksum = 0;
-//        // Compute checksum based on the content of the message
-//        for (char c : message.toCharArray()) {
-//            checksum += c;
-//        }
-//        checksum %= 256; // Ensure the checksum is within one byte
-//
-//        // Formulate the complete message with STX at the start, ETX after the message, followed by the checksum and CR, LF
-//        String checksumHex = String.format("%02X", checksum);
-//        String formattedMessage = STX + message + ETX + checksumHex + CR + LF;
-//
-//        // Logging ASCII values for debugging
-//        StringBuilder asciiDebugInfo = new StringBuilder("Message ASCII Values: ");
-//        for (char c : formattedMessage.toCharArray()) {
-//            asciiDebugInfo.append("[").append((int) c).append("] ");
-//        }
-//        logger.debug(asciiDebugInfo.toString());
-//
-//        logger.debug("Built message with checksum: " + formattedMessage);
-//        return formattedMessage;
-//    }
-    // Method to parse the patient segment and return a PatientRecord object
     public static PatientRecord parsePatientRecord(String patientSegment) {
         // Assume the segment format is:
         // <STX>frameNumberP|patientId||additionalId|patientName||patientSecondName|patientSex|||||patientAddress||||patientPhoneNumber|attendingDoctor|<CR><ETX>checksum
