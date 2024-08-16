@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 
 public class Indiko {
 
-    private static final Logger logger = LogManager.getLogger(Indiko.class);
+    public static final Logger logger = LogManager.getLogger(Indiko.class);
 
     public static void main(String[] args) {
         logger.info("Starting Indiko middleware...");
@@ -18,9 +18,13 @@ public class Indiko {
             logger.error("Failed to load settings.", e);
             return;
         }
-        JsonObject middlewareSettings = SettingsLoader.getSettings().getAsJsonObject("middlewareSettings");
-        int port = middlewareSettings.get("middlewarePort").getAsInt();
+
+        int port = SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerPort();
         IndikoServer server = new IndikoServer();
         server.start(port);
     }
+    
+    
+    
+    
 }

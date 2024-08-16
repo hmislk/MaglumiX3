@@ -1,12 +1,10 @@
 package org.carecode.mw.lims.mw.indiko;
-
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
-import com.google.gson.JsonObject;
 
 public class AnalyzerCommunicator {
 
@@ -17,8 +15,7 @@ public class AnalyzerCommunicator {
     private static final char ETX = 0x03; // End of Text
 
     public static void startServer() {
-        JsonObject tcpipSettings = SettingsLoader.getSettings().getAsJsonObject("middlewareSettings").getAsJsonObject("tcpipSettings");
-        int middlewarePort = tcpipSettings.get("middlewarePort").getAsInt();
+        int middlewarePort = SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerPort();
 
         try (ServerSocket serverSocket = new ServerSocket(middlewarePort)) {
             System.out.println("Server started, listening on port: " + middlewarePort);
