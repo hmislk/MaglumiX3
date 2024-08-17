@@ -230,7 +230,7 @@ public class IndikoServer {
         logger.debug("Handling eot");
         logger.debug(respondingQuery);
         if (respondingQuery) {
-            patientDataBundle = LISCommunicator.pullOrders(patientDataBundle.getQueryRecords().get(0));
+            patientDataBundle = LISCommunicator.pullTestOrdersForSampleRequests(patientDataBundle.getQueryRecords().get(0));
             logger.debug("Starting Transmission to send test requests");
             out.write(ENQ);
             out.flush();
