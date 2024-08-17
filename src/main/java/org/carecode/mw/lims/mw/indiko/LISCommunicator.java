@@ -24,6 +24,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.logging.Level;
+import org.carecode.lims.libraries.OrderRecord;
+import org.carecode.lims.libraries.PatientDataBundle;
+import org.carecode.lims.libraries.PatientRecord;
+import org.carecode.lims.libraries.QueryRecord;
+import org.carecode.lims.libraries.ResultsRecord;
 
 public class LISCommunicator {
 
