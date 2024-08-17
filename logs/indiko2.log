@@ -1,0 +1,54 @@
+2024-08-05 03:18:28 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 03:18:28 INFO  Indiko:15 - Loading settings...
+2024-08-05 03:18:28 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-05 03:18:28 INFO  Indiko:17 - Settings loaded successfully.
+2024-08-05 03:18:28 INFO  IndikoServer:67 - Server started on port 10100
+2024-08-05 03:18:28 INFO  IndikoServer:71 - New client connected: 172.16.241.12
+2024-08-05 03:19:20 DEBUG IndikoServer:110 - Received ENQ
+2024-08-05 03:19:20 DEBUG IndikoServer:113 - Sent ACK
+2024-08-05 03:19:20 DEBUG IndikoServer:126 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805031154
+2024-08-05 03:19:20 DEBUG IndikoServer:130 - Sent ACK after STX-ETX block
+2024-08-05 03:19:20 DEBUG IndikoServer:104 - Checksum character: E
+2024-08-05 03:19:20 DEBUG IndikoServer:138 - Received unexpected data: 1
+2024-08-05 03:19:20 DEBUG IndikoServer:126 - Complete message received: 2Q|1|^2240801237^^||^^^ALL^||||||||O
+2024-08-05 03:19:20 DEBUG IndikoServer:130 - Sent ACK after STX-ETX block
+2024-08-05 03:19:20 DEBUG IndikoServer:104 - Checksum character: 4
+2024-08-05 03:19:20 DEBUG IndikoServer:138 - Received unexpected data: B
+2024-08-05 03:19:20 DEBUG IndikoServer:126 - Complete message received: 3L|1|N
+2024-08-05 03:19:20 DEBUG IndikoServer:130 - Sent ACK after STX-ETX block
+2024-08-05 03:19:20 DEBUG IndikoServer:104 - Checksum character: 0
+2024-08-05 03:19:20 DEBUG IndikoServer:138 - Received unexpected data: 6
+2024-08-05 03:19:20 DEBUG IndikoServer:133 - EOT Received
+2024-08-05 03:19:22 INFO  IndikoServer:71 - New client connected: 172.16.241.12
+2024-08-05 03:19:24 DEBUG IndikoServer:110 - Received ENQ
+2024-08-05 03:19:24 DEBUG IndikoServer:113 - Sent ACK
+2024-08-05 03:19:24 DEBUG IndikoServer:126 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805031158
+2024-08-05 03:19:24 DEBUG IndikoServer:130 - Sent ACK after STX-ETX block
+2024-08-05 03:19:24 DEBUG IndikoServer:104 - Checksum character: E
+2024-08-05 03:19:24 DEBUG IndikoServer:138 - Received unexpected data: 5
+2024-08-05 03:19:24 DEBUG IndikoServer:126 - Complete message received: 2Q|1|^2240801063^^||^^^ALL^||||||||O
+2024-08-05 03:19:24 DEBUG IndikoServer:130 - Sent ACK after STX-ETX block
+2024-08-05 03:19:24 DEBUG IndikoServer:104 - Checksum character: 4
+2024-08-05 03:19:24 DEBUG IndikoServer:138 - Received unexpected data: 8
+2024-08-05 03:19:24 DEBUG IndikoServer:126 - Complete message received: 3L|1|N
+2024-08-05 03:19:24 DEBUG IndikoServer:130 - Sent ACK after STX-ETX block
+2024-08-05 03:19:24 DEBUG IndikoServer:104 - Checksum character: 0
+2024-08-05 03:19:24 DEBUG IndikoServer:138 - Received unexpected data: 6
+2024-08-05 03:19:24 DEBUG IndikoServer:133 - EOT Received
+2024-08-05 03:19:26 INFO  IndikoServer:71 - New client connected: 172.16.241.12
+2024-08-05 03:19:28 DEBUG IndikoServer:110 - Received ENQ
+2024-08-05 03:19:28 DEBUG IndikoServer:113 - Sent ACK
+2024-08-05 03:19:28 DEBUG IndikoServer:126 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805031202
+2024-08-05 03:19:28 DEBUG IndikoServer:130 - Sent ACK after STX-ETX block
+2024-08-05 03:19:28 DEBUG IndikoServer:104 - Checksum character: D
+2024-08-05 03:19:28 DEBUG IndikoServer:138 - Received unexpected data: B
+2024-08-05 03:19:28 DEBUG IndikoServer:126 - Complete message received: 2Q|1|^2240801120^^||^^^ALL^||||||||O
+2024-08-05 03:19:28 DEBUG IndikoServer:130 - Sent ACK after STX-ETX block
+2024-08-05 03:19:28 DEBUG IndikoServer:104 - Checksum character: 4
+2024-08-05 03:19:28 DEBUG IndikoServer:138 - Received unexpected data: 2
+2024-08-05 03:19:28 DEBUG IndikoServer:126 - Complete message received: 3L|1|N
+2024-08-05 03:19:28 DEBUG IndikoServer:130 - Sent ACK after STX-ETX block
+2024-08-05 03:19:28 DEBUG IndikoServer:104 - Checksum character: 0
+2024-08-05 03:19:28 DEBUG IndikoServer:138 - Received unexpected data: 6
+2024-08-05 03:19:28 DEBUG IndikoServer:133 - EOT Received
+2024-08-05 03:19:30 INFO  IndikoServer:71 - New client connected: 172.16.241.12

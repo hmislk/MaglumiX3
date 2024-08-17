@@ -1,0 +1,120 @@
+2024-08-05 04:01:53 INFO  Indiko:12 - Starting Indiko middleware...
+2024-08-05 04:01:53 INFO  Indiko:15 - Loading settings...
+2024-08-05 04:01:53 INFO  SettingsLoader:21 - Settings loaded from config.json
+2024-08-05 04:01:53 INFO  Indiko:17 - Settings loaded successfully.
+2024-08-05 04:01:53 INFO  IndikoServer:67 - Server started on port 10100
+2024-08-05 04:01:54 INFO  IndikoServer:71 - New client connected: 172.16.241.12
+2024-08-05 04:03:15 DEBUG IndikoServer:118 - Received ENQ
+2024-08-05 04:03:15 DEBUG IndikoServer:121 - Sent ACK
+2024-08-05 04:03:15 DEBUG IndikoServer:184 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805035548
+2024-08-05 04:03:15 DEBUG IndikoServer:340 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805035548
+2024-08-05 04:03:15 DEBUG IndikoServer:188 - Sent ACK after STX-ETX block
+2024-08-05 04:03:15 DEBUG IndikoServer:107 - Checksum character: E
+2024-08-05 04:03:15 DEBUG IndikoServer:107 - Checksum character: C
+2024-08-05 04:03:15 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:03:15 DEBUG IndikoServer:207 - Received unexpected data: 
+
+2024-08-05 04:03:15 DEBUG IndikoServer:184 - Complete message received: 2Q|1|^2240801237^^||^^^ALL^||||||||O
+2024-08-05 04:03:15 DEBUG IndikoServer:344 - Query Record Received: 2Q|1|^2240801237^^||^^^ALL^||||||||O
+2024-08-05 04:03:15 DEBUG IndikoServer:347 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@4f6f416f
+2024-08-05 04:03:15 DEBUG IndikoServer:188 - Sent ACK after STX-ETX block
+2024-08-05 04:03:15 DEBUG IndikoServer:107 - Checksum character: 4
+2024-08-05 04:03:15 DEBUG IndikoServer:107 - Checksum character: B
+2024-08-05 04:03:15 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:03:15 DEBUG IndikoServer:207 - Received unexpected data: 
+
+2024-08-05 04:03:15 DEBUG IndikoServer:184 - Complete message received: 3L|1|N
+2024-08-05 04:03:15 DEBUG IndikoServer:362 - Termination Record Received: 3L|1|N
+2024-08-05 04:03:15 DEBUG IndikoServer:188 - Sent ACK after STX-ETX block
+2024-08-05 04:03:15 DEBUG IndikoServer:107 - Checksum character: 0
+2024-08-05 04:03:15 DEBUG IndikoServer:107 - Checksum character: 6
+2024-08-05 04:03:15 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:03:15 DEBUG IndikoServer:207 - Received unexpected data: 
+
+2024-08-05 04:03:15 DEBUG IndikoServer:191 - EOT Received
+2024-08-05 04:03:15 DEBUG IndikoServer:193 - Starting Transmission to send test requests
+2024-08-05 04:03:15 DEBUG IndikoServer:196 - Sent ENQ
+2024-08-05 04:03:17 DEBUG IndikoServer:124 - ACK Received.
+2024-08-05 04:03:17 DEBUG IndikoServer:126 - Sending Header
+2024-08-05 04:03:17 DEBUG IndikoServer:128 - 1H||\^&||null^null^null|||null
+2024-08-05 04:03:17 DEBUG IndikoServer:375 - Built message with checksum: 1H||\^&||null^null^null|||null65
+2024-08-05 04:03:17 DEBUG IndikoServer:130 - 1H||\^&||null^null^null|||null65
+2024-08-05 04:03:17 DEBUG IndikoServer:530 - Response sent: 1H||\^&||null^null^null|||null65
+2024-08-05 04:03:17 DEBUG IndikoServer:135 - Sent 1H||\^&||null^null^null|||null65
+2024-08-05 04:03:17 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:03:47 DEBUG IndikoServer:118 - Received ENQ
+2024-08-05 04:03:47 DEBUG IndikoServer:121 - Sent ACK
+2024-08-05 04:03:47 DEBUG IndikoServer:184 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805035621
+2024-08-05 04:03:47 DEBUG IndikoServer:340 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805035621
+2024-08-05 04:03:47 DEBUG IndikoServer:188 - Sent ACK after STX-ETX block
+2024-08-05 04:03:47 DEBUG IndikoServer:107 - Checksum character: E
+2024-08-05 04:03:47 DEBUG IndikoServer:107 - Checksum character: 4
+2024-08-05 04:03:47 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:03:47 DEBUG IndikoServer:207 - Received unexpected data: 
+
+2024-08-05 04:03:47 DEBUG IndikoServer:184 - Complete message received: 2Q|1|^2240801063^^||^^^ALL^||||||||O
+2024-08-05 04:03:47 DEBUG IndikoServer:344 - Query Record Received: 2Q|1|^2240801063^^||^^^ALL^||||||||O
+2024-08-05 04:03:47 DEBUG IndikoServer:347 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@7daa0fbd
+2024-08-05 04:03:47 DEBUG IndikoServer:188 - Sent ACK after STX-ETX block
+2024-08-05 04:03:47 DEBUG IndikoServer:107 - Checksum character: 4
+2024-08-05 04:03:47 DEBUG IndikoServer:107 - Checksum character: 8
+2024-08-05 04:03:47 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:03:47 DEBUG IndikoServer:207 - Received unexpected data: 
+
+2024-08-05 04:03:47 DEBUG IndikoServer:184 - Complete message received: 3L|1|N
+2024-08-05 04:03:47 DEBUG IndikoServer:362 - Termination Record Received: 3L|1|N
+2024-08-05 04:03:47 DEBUG IndikoServer:188 - Sent ACK after STX-ETX block
+2024-08-05 04:03:47 DEBUG IndikoServer:107 - Checksum character: 0
+2024-08-05 04:03:47 DEBUG IndikoServer:107 - Checksum character: 6
+2024-08-05 04:03:47 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:03:47 DEBUG IndikoServer:207 - Received unexpected data: 
+
+2024-08-05 04:03:47 DEBUG IndikoServer:191 - EOT Received
+2024-08-05 04:03:47 DEBUG IndikoServer:193 - Starting Transmission to send test requests
+2024-08-05 04:03:47 DEBUG IndikoServer:196 - Sent ENQ
+2024-08-05 04:03:49 DEBUG IndikoServer:124 - ACK Received.
+2024-08-05 04:03:49 DEBUG IndikoServer:126 - Sending Header
+2024-08-05 04:03:49 DEBUG IndikoServer:128 - 1H||\^&||null^null^null|||null
+2024-08-05 04:03:49 DEBUG IndikoServer:375 - Built message with checksum: 1H||\^&||null^null^null|||null65
+2024-08-05 04:03:49 DEBUG IndikoServer:130 - 1H||\^&||null^null^null|||null65
+2024-08-05 04:03:49 DEBUG IndikoServer:530 - Response sent: 1H||\^&||null^null^null|||null65
+2024-08-05 04:03:49 DEBUG IndikoServer:135 - Sent 1H||\^&||null^null^null|||null65
+2024-08-05 04:03:49 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:04:19 DEBUG IndikoServer:118 - Received ENQ
+2024-08-05 04:04:19 DEBUG IndikoServer:121 - Sent ACK
+2024-08-05 04:04:19 DEBUG IndikoServer:184 - Complete message received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805035653
+2024-08-05 04:04:19 DEBUG IndikoServer:340 - Header Record Received: 1H|\^&|||1^Analyzer 1^7.0|||||||P||20240805035653
+2024-08-05 04:04:19 DEBUG IndikoServer:188 - Sent ACK after STX-ETX block
+2024-08-05 04:04:19 DEBUG IndikoServer:107 - Checksum character: E
+2024-08-05 04:04:19 DEBUG IndikoServer:107 - Checksum character: 9
+2024-08-05 04:04:19 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:04:19 DEBUG IndikoServer:207 - Received unexpected data: 
+
+2024-08-05 04:04:19 DEBUG IndikoServer:184 - Complete message received: 2Q|1|^2240801120^^||^^^ALL^||||||||O
+2024-08-05 04:04:19 DEBUG IndikoServer:344 - Query Record Received: 2Q|1|^2240801120^^||^^^ALL^||||||||O
+2024-08-05 04:04:19 DEBUG IndikoServer:347 - Parsed the Query Record: org.carecode.mw.lims.mw.indiko.QueryRecord@42530531
+2024-08-05 04:04:19 DEBUG IndikoServer:188 - Sent ACK after STX-ETX block
+2024-08-05 04:04:19 DEBUG IndikoServer:107 - Checksum character: 4
+2024-08-05 04:04:19 DEBUG IndikoServer:107 - Checksum character: 2
+2024-08-05 04:04:19 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:04:19 DEBUG IndikoServer:207 - Received unexpected data: 
+
+2024-08-05 04:04:19 DEBUG IndikoServer:184 - Complete message received: 3L|1|N
+2024-08-05 04:04:19 DEBUG IndikoServer:362 - Termination Record Received: 3L|1|N
+2024-08-05 04:04:19 DEBUG IndikoServer:188 - Sent ACK after STX-ETX block
+2024-08-05 04:04:19 DEBUG IndikoServer:107 - Checksum character: 0
+2024-08-05 04:04:19 DEBUG IndikoServer:107 - Checksum character: 6
+2024-08-05 04:04:19 DEBUG IndikoServer:207 - Received unexpected data: 
+2024-08-05 04:04:19 DEBUG IndikoServer:207 - Received unexpected data: 
+
+2024-08-05 04:04:19 DEBUG IndikoServer:191 - EOT Received
+2024-08-05 04:04:19 DEBUG IndikoServer:193 - Starting Transmission to send test requests
+2024-08-05 04:04:19 DEBUG IndikoServer:196 - Sent ENQ
+2024-08-05 04:04:19 DEBUG IndikoServer:124 - ACK Received.
+2024-08-05 04:04:19 DEBUG IndikoServer:126 - Sending Header
+2024-08-05 04:04:19 DEBUG IndikoServer:128 - 1H||\^&||null^null^null|||null
+2024-08-05 04:04:19 DEBUG IndikoServer:375 - Built message with checksum: 1H||\^&||null^null^null|||null65
+2024-08-05 04:04:19 DEBUG IndikoServer:130 - 1H||\^&||null^null^null|||null65
+2024-08-05 04:04:19 DEBUG IndikoServer:530 - Response sent: 1H||\^&||null^null^null|||null65
+2024-08-05 04:04:19 DEBUG IndikoServer:135 - Sent 1H||\^&||null^null^null|||null65
+2024-08-05 04:04:19 DEBUG IndikoServer:207 - Received unexpected data: 
