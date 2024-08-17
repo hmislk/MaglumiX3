@@ -33,19 +33,19 @@ import org.carecode.lims.libraries.ResultsRecord;
 
 public class LISCommunicator {
 
-    static boolean testing = true;
+//    static boolean testing = true;
     private static final Gson gson = new Gson();
 
     public static PatientDataBundle pullTestOrdersForSampleRequests(QueryRecord queryRecord) {
-        if (testing) {
-            PatientDataBundle pdb = new PatientDataBundle();
-            List<String> testNames = Arrays.asList("HDL", "RF2");
-            OrderRecord or = new OrderRecord(0, queryRecord.getSampleId(), testNames, "S", new Date(), "testInformation");
-            pdb.getOrderRecords().add(or);
-            PatientRecord pr = new PatientRecord(0, "1010101", "111111", "Buddhika Ariyaratne", "M H B", "Male", "Sinhalese", null, "Galle", "0715812399", "Dr Niluka");
-            pdb.setPatientRecord(pr);
-            return pdb;
-        }
+//        if (testing) {
+//            PatientDataBundle pdb = new PatientDataBundle();
+//            List<String> testNames = Arrays.asList("HDL", "RF2");
+//            OrderRecord or = new OrderRecord(0, queryRecord.getSampleId(), testNames, "S", new Date(), "testInformation");
+//            pdb.getOrderRecords().add(or);
+//            PatientRecord pr = new PatientRecord(0, "1010101", "111111", "Buddhika Ariyaratne", "M H B", "Male", "Sinhalese", null, "Galle", "0715812399", "Dr Niluka");
+//            pdb.setPatientRecord(pr);
+//            return pdb;
+//        }
 
         try {
             String postSampleDataEndpoint = SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl();
@@ -91,201 +91,45 @@ public class LISCommunicator {
         return null;
     }
 
-    public static void sendObservationsToLims(List<Map.Entry<String, String>> observations, Date date) {
-        Indiko.logger.info("Sending observations to LIMS");
-
-        // Determine the file name for the day's sample IDs
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        String fileName = "processed_samples_" + dateFormat.format(date) + ".txt";
-        Set<String> processedSamples = new HashSet<>();
-
-        // Load the processed samples from the file if it exists
-        try {
-            Path path = Paths.get(fileName);
-            if (Files.exists(path)) {
-                System.out.println("Loading processed samples from file: " + fileName);
-                processedSamples.addAll(Files.readAllLines(path));
-            }
-        } catch (IOException e) {
-            Indiko.logger.error("Error reading processed samples file: " + fileName, e);
-        }
-
-        // Prepare to write to the file
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
-            for (Map.Entry<String, String> entry : observations) {
-                String sampleId = entry.getKey();
-                String observationValue = entry.getValue();
-
-                // Check if the sample ID has already been processed
-                if (!processedSamples.contains(sampleId)) {
-                    System.out.println("Processing sample ID: " + sampleId + " with HbA1c value: " + observationValue);
-
-                    // Create a custom JSON object to represent the observation
-                    JSONObject observationJson = new JSONObject();
-                    observationJson.put("sampleId", sampleId);
-                    observationJson.put("observationValue", observationValue);
-                    observationJson.put("analyzerId", SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerId());
-                    observationJson.put("departmentAnalyzerId", SettingsLoader.getSettings().getAnalyzerDetails().getDepartmentAnalyzerId());
-                    observationJson.put("analyzerName", SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName());
-                    observationJson.put("departmentId", SettingsLoader.getSettings().getAnalyzerDetails().getDepartmentId());
-                    observationJson.put("username", SettingsLoader.getSettings().getLimsSettings().getUsername());
-                    observationJson.put("password", SettingsLoader.getSettings().getLimsSettings().getPassword());
-
-                    // Additional attributes for HbA1c percentage
-                    observationJson.put("observationValueCodingSystem", "http://loinc.org");
-                    observationJson.put("observationValueCode", "4548-4"); // Code for HbA1c as a percentage
-                    observationJson.put("observationUnitCodingSystem", "http://unitsofmeasure.org");
-                    observationJson.put("observationUnitCode", "%"); // Unit code for percentage
-
-                    // Log the JSON object
-                    System.out.println("Prepared Observation JSON: " + observationJson.toString(4));
-
-                    // Send the JSON object to the LIMS server
-                    System.out.println("Sending observation to LIMS server...");
-                    sendJsonToLimsServer(observationJson);
-
-                    // Write the sample ID to the file
-                    writer.write(sampleId);
-                    writer.newLine();
-
-                    // Add the sample ID to the processed set
-                    processedSamples.add(sampleId);
-                } else {
-                    Indiko.logger.info("Sample ID " + sampleId + " has already been processed for today.");
-                }
-            }
-        } catch (IOException e) {
-            Indiko.logger.error("Error writing to processed samples file: " + fileName, e);
-        }
-    }
-
-    public static void sendJsonToLimsServer(JSONObject observationJson) {
-        Indiko.logger.info("Preparing to send JSON to LIMS server");
-
-        try {
-            // Log the JSON being sent
-            Indiko.logger.info("Observation JSON: " + observationJson.toString(4));
-
-            // Create the URL and open the connection
-            URL url = new URL(SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl() + "/observation");
-            Indiko.logger.info("LIMS Server URL: " + url.toString());
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-
-            // Set connection properties
-            connection.setDoOutput(true);
-            connection.setRequestMethod("POST");
-            connection.setRequestProperty("Content-Type", "application/json");
-
-            // Add Basic Authentication header
-            String auth = SettingsLoader.getSettings().getLimsSettings().getUsername() + ":" + SettingsLoader.getSettings().getLimsSettings().getPassword();
-            String encodedAuth = Base64.getEncoder().encodeToString(auth.getBytes());
-            connection.setRequestProperty("Authorization", "Basic " + encodedAuth);
-            Indiko.logger.info("Authorization Header: Basic " + encodedAuth);
-
-            // Send JSON data
-            Indiko.logger.info("Sending data...");
-            OutputStream os = connection.getOutputStream();
-            os.write(observationJson.toString().getBytes());
-            os.flush();
-            os.close();
-
-            // Get response code
-            int responseCode = connection.getResponseCode();
-            Indiko.logger.info("Response Code: " + responseCode);
-
-            // Handle server response
-            if (responseCode != HttpURLConnection.HTTP_OK) {
-                BufferedReader br = new BufferedReader(new InputStreamReader((connection.getErrorStream())));
-                String output;
-                Indiko.logger.error("Error from Server:");
-                while ((output = br.readLine()) != null) {
-                    Indiko.logger.error(output);
-                }
-                br.close();
-            } else {
-                BufferedReader br = new BufferedReader(new InputStreamReader((connection.getInputStream())));
-                String output;
-                Indiko.logger.info("Response from Server:");
-                while ((output = br.readLine()) != null) {
-                    Indiko.logger.info(output);
-                }
-                br.close();
-            }
-
-            connection.disconnect();
-
-        } catch (Exception e) {
-            Indiko.logger.error("Exception occurred while sending JSON to LIMS server", e);
-        }
-    }
-
+   
     public static void pushResults(PatientDataBundle patientDataBundle) {
-
-        if (testing) {
-            // Output all records for testing purposes
-            System.out.println("Testing mode: Outputting patient data bundle details.");
-
-            // Output patient record
-            PatientRecord patientRecord = patientDataBundle.getPatientRecord();
-            if (patientRecord != null) {
-                System.out.println("Patient ID: " + patientRecord.getPatientId());
-                System.out.println("Patient Name: " + patientRecord.getPatientName());
-                // Additional patient details can be printed here
-            }
-
-            // Output results records
-            List<ResultsRecord> resultsRecords = patientDataBundle.getResultsRecords();
-            if (resultsRecords != null && !resultsRecords.isEmpty()) {
-                System.out.println("Results Records:");
-                for (ResultsRecord record : resultsRecords) {
-                    System.out.println("Test Code: " + record.getTestCode() + ", Result: " + record.getResultValue());
-                }
-            }
-
-            // Output order records
-            List<OrderRecord> orderRecords = patientDataBundle.getOrderRecords();
-            if (orderRecords != null && !orderRecords.isEmpty()) {
-                System.out.println("Order Records:");
-                for (OrderRecord record : orderRecords) {
-                    System.out.println("Sample ID: " + record.getSampleId() + ", Test Names: " + String.join(", ", record.getTestNames()));
-                }
-            }
-
-            // Output query records
-            List<QueryRecord> queryRecords = patientDataBundle.getQueryRecords();
-            if (queryRecords != null && !queryRecords.isEmpty()) {
-                System.out.println("Query Records:");
-                for (QueryRecord record : queryRecords) {
-                    System.out.println("Sample ID: " + record.getSampleId() + ", Query Type: " + record.getQueryType());
-                }
-            }
-        }
         try {
-
-            String pullSampleDataEndpoint = SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl();
-
-            URL url = new URL(pullSampleDataEndpoint);
+            System.out.println("SettingsLoader.getSettings() = " + SettingsLoader.getSettings());
+            System.out.println("SettingsLoader.getSettings().getLimsSettings() = " + SettingsLoader.getSettings().getLimsSettings());
+            System.out.println("SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl() = " + SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl());
+            String pushResultsEndpoint = SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl() + "/test_results";
+            URL url = new URL(pushResultsEndpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
+            conn.setDoOutput(true);
+
+            // Serialize PatientDataBundle to JSON
+            String jsonInputString = gson.toJson(patientDataBundle);
+
+            // Send the JSON in the request body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
 
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String inputLine;
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
                 StringBuilder response = new StringBuilder();
+                String inputLine;
 
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
                 in.close();
 
-                // Process the response
+                // Optionally process the server response (if needed)
                 JsonObject responseObject = JsonParser.parseString(response.toString()).getAsJsonObject();
-
+                System.out.println("Response from server: " + responseObject.toString());
             } else {
-                System.out.println("GET request failed");
+                System.out.println("POST request failed. Response code: " + responseCode);
             }
         } catch (Exception e) {
             e.printStackTrace();

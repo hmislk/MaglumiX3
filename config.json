@@ -1,27 +1,25 @@
 {
-    "middlewareSettings": {
-        "analyzerDetails": {
-            "analyzerName": "IndikoPlus",
-            "serialNumber": "12345-67890",
-            "analyzerId": "1",
-            "analyzerIP": "172.16.241.71",
-            "analyzerPort": 10100,
-            "communicationType": "TCP/IP",
-            "socketCommunicationType": "Client",
-            "resultSendingCriteria": "Sample",
-            "automaticResultSending": "Yes",
-            "hostQueryInUse": "Yes",
-            "multipleHostQuery": "No",
-            "sampleIdSendingDelay": "0",
-            "resultSendingDelay": "0",
-            "qcResultSendingInUse": "Yes",
-            "departmentAnalyzerId": "22103",
-            "departmentId": "9209"
-        },
-        "limsSettings": {
-            "limsServerBaseUrl": "http://192.168.63.100:8080/ruhuna-dev/api/middleware",
-            "username": "buddhika",
-            "password": "Buddhika123@"
-        }
+    "analyzerDetails": {
+        "analyzerName": "IndikoPlus",
+        "serialNumber": "12345-67890",
+        "analyzerId": "1",
+        "analyzerIP": "172.16.241.71",
+        "analyzerPort": 10100,
+        "communicationType": "TCP/IP",
+        "socketCommunicationType": "Client",
+        "resultSendingCriteria": "Sample",
+        "automaticResultSending": "Yes",
+        "hostQueryInUse": "Yes",
+        "multipleHostQuery": "No",
+        "sampleIdSendingDelay": "0",
+        "resultSendingDelay": "0",
+        "qcResultSendingInUse": "Yes",
+        "departmentAnalyzerId": "22103",
+        "departmentId": "9209"
+    },
+    "limsSettings": {
+        "limsServerBaseUrl": "http://192.168.63.100:8080/ruhuna-dev/api/middleware",
+        "username": "buddhika",
+        "password": "Buddhika123@"
     }
 }
