@@ -7,12 +7,12 @@ import org.carecode.lims.libraries.QueryRecord;
 
 public class Indiko {
 
-    static boolean testing=true;
+    static boolean testingPullingTestOrders=true;
     
     public static final Logger logger = LogManager.getLogger(Indiko.class);
 
     public static void main(String[] args) {
-        if(testing){
+        if(testingPullingTestOrders){
             logger.info("Loading settings...");
             SettingsLoader.loadSettings();
             logger.info("Settings loaded successfully.");

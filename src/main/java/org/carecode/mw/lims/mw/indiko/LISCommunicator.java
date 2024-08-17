@@ -222,7 +222,7 @@ public class LISCommunicator {
     public static void pushResults(PatientDataBundle patientDataBundle) {
 
         if (testing) {
-            // Output all records for testing purposes
+            // Output all records for testingPullingTestOrders purposes
             System.out.println("Testing mode: Outputting patient data bundle details.");
 
             // Output patient record
@@ -260,32 +260,41 @@ public class LISCommunicator {
                 }
             }
         }
+
         try {
-
-            String pullSampleDataEndpoint = SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl();
-
-            URL url = new URL(pullSampleDataEndpoint);
+            String pushResultsEndpoint = SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl() + "/test_results";
+            URL url = new URL(pushResultsEndpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("GET");
+            conn.setRequestMethod("POST");
             conn.setRequestProperty("Content-Type", "application/json");
             conn.setRequestProperty("Accept", "application/json");
+            conn.setDoOutput(true);
+
+            // Serialize PatientDataBundle to JSON
+            String jsonInputString = gson.toJson(patientDataBundle);
+
+            // Send the JSON in the request body
+            try (OutputStream os = conn.getOutputStream()) {
+                byte[] input = jsonInputString.getBytes("utf-8");
+                os.write(input, 0, input.length);
+            }
 
             int responseCode = conn.getResponseCode();
             if (responseCode == HttpURLConnection.HTTP_OK) {
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                String inputLine;
+                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
                 StringBuilder response = new StringBuilder();
+                String inputLine;
 
                 while ((inputLine = in.readLine()) != null) {
                     response.append(inputLine);
                 }
                 in.close();
 
-                // Process the response
+                // Optionally process the server response (if needed)
                 JsonObject responseObject = JsonParser.parseString(response.toString()).getAsJsonObject();
-
+                System.out.println("Response from server: " + responseObject.toString());
             } else {
-                System.out.println("GET request failed");
+                System.out.println("POST request failed. Response code: " + responseCode);
             }
         } catch (Exception e) {
             e.printStackTrace();
