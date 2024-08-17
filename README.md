@@ -1,1 +1,1 @@
-# MaglumiX3
+# Indiko Plus Middleware
