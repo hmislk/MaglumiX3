@@ -5,6 +5,8 @@
         "analyzerId": "1",
         "analyzerIP": "172.16.241.71",
         "analyzerPort": 10100,
+        "hostPort": 10100,
+        "hostIp": "172.16.241.71",
         "communicationType": "TCP/IP",
         "socketCommunicationType": "Client",
         "resultSendingCriteria": "Sample",

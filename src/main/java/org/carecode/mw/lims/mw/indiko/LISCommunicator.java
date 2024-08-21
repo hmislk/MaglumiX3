@@ -1,35 +1,16 @@
 package org.carecode.mw.lims.mw.indiko;
 
 import com.google.gson.Gson;
-import org.json.JSONObject;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Base64;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.logging.Level;
-import org.carecode.lims.libraries.OrderRecord;
 import org.carecode.lims.libraries.PatientDataBundle;
-import org.carecode.lims.libraries.PatientRecord;
 import org.carecode.lims.libraries.QueryRecord;
-import org.carecode.lims.libraries.ResultsRecord;
 
 public class LISCommunicator {
 
