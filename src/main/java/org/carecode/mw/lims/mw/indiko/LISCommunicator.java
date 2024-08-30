@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import org.carecode.lims.libraries.DataBundle;
 import org.carecode.lims.libraries.PatientDataBundle;
 import org.carecode.lims.libraries.QueryRecord;
 
@@ -17,7 +18,7 @@ public class LISCommunicator {
 //    static boolean testing = true;
     private static final Gson gson = new Gson();
 
-    public static PatientDataBundle pullTestOrdersForSampleRequests(QueryRecord queryRecord) {
+    public static DataBundle pullTestOrdersForSampleRequests(QueryRecord queryRecord) {
 //        if (testing) {
 //            PatientDataBundle pdb = new PatientDataBundle();
 //            List<String> testNames = Arrays.asList("HDL", "RF2");
@@ -29,7 +30,7 @@ public class LISCommunicator {
 //        }
 
         try {
-            String postSampleDataEndpoint = SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl();
+            String postSampleDataEndpoint = Indiko.middlewareSettings.getLimsSettings().getLimsServerBaseUrl();
             URL url = new URL(postSampleDataEndpoint + "/test_orders_for_sample_requests");
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -59,7 +60,7 @@ public class LISCommunicator {
                 in.close();
 
                 // Convert the response to a PatientDataBundle object
-                PatientDataBundle patientDataBundle = gson.fromJson(response.toString(), PatientDataBundle.class);
+                DataBundle patientDataBundle = gson.fromJson(response.toString(), DataBundle.class);
 
                 return patientDataBundle;
             } else {
@@ -73,12 +74,12 @@ public class LISCommunicator {
     }
 
    
-    public static void pushResults(PatientDataBundle patientDataBundle) {
+    public static void pushResults(DataBundle patientDataBundle) {
         try {
-            System.out.println("SettingsLoader.getSettings() = " + SettingsLoader.getSettings());
-            System.out.println("SettingsLoader.getSettings().getLimsSettings() = " + SettingsLoader.getSettings().getLimsSettings());
-            System.out.println("SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl() = " + SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl());
-            String pushResultsEndpoint = SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl() + "/test_results";
+            System.out.println("SettingsLoader.getSettings() = " + Indiko.middlewareSettings);
+            System.out.println("SettingsLoader.getSettings().getLimsSettings() = " + Indiko.middlewareSettings.getLimsSettings());
+            System.out.println("SettingsLoader.getSettings().getLimsSettings().getLimsServerBaseUrl() = " + Indiko.middlewareSettings.getLimsSettings().getLimsServerBaseUrl());
+            String pushResultsEndpoint = Indiko.middlewareSettings.getLimsSettings().getLimsServerBaseUrl() + "/test_results";
             URL url = new URL(pushResultsEndpoint);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -105,10 +106,10 @@ public class LISCommunicator {
                     response.append(inputLine);
                 }
                 in.close();
-
-                // Optionally process the server response (if needed)
-                JsonObject responseObject = JsonParser.parseString(response.toString()).getAsJsonObject();
-                System.out.println("Response from server: " + responseObject.toString());
+//
+//                // Optionally process the server response (if needed)
+//                JsonObject responseObject = JsonParser.parseString(response.toString()).getAsJsonObject();
+//                System.out.println("Response from server: " + responseObject.toString());
             } else {
                 System.out.println("POST request failed. Response code: " + responseCode);
             }

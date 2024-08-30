@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.core.appender.rolling.action.IfAny;
+import org.carecode.lims.libraries.DataBundle;
 import org.carecode.lims.libraries.OrderRecord;
 import org.carecode.lims.libraries.PatientDataBundle;
 import org.carecode.lims.libraries.PatientRecord;
@@ -52,7 +53,9 @@ public class IndikoServer {
     boolean needToSendOrderingRecordForQuery;
     boolean needToSendEotForRecordForQuery;
 
-    PatientDataBundle patientDataBundle = new PatientDataBundle();
+    DataBundle patientDataBundle = new DataBundle();
+    
+    String sampleId;
 
     String patientId;
     List<String> testNames;
@@ -448,9 +451,21 @@ public class IndikoServer {
         return terminationStart + terminationInfo;
     }
 
+    public static String extractFirstSegment(String input) {
+        int pipeIndex = input.indexOf('|');
+        if (pipeIndex != -1) {
+            return input.substring(0, pipeIndex + 1); // Include the pipe
+        }
+        return input; // In case there is no pipe, return the whole input
+    }
+
     private void processMessage(String data, Socket clientSocket) {
-        if (data.contains("H|")) {  // Header Record
-            patientDataBundle = new PatientDataBundle();
+
+        String firstSegment = extractFirstSegment(data);
+
+        if (firstSegment.contains("H|")) {  // Header Record
+            patientDataBundle = new DataBundle();
+            patientDataBundle.setMiddlewareSettings(Indiko.middlewareSettings);
             receivingQuery = false;
             receivingResults = false;
             respondingQuery = false;
@@ -460,7 +475,7 @@ public class IndikoServer {
             needToSendPatientRecordForQuery = false;
             needToSendHeaderRecordForQuery = false;
             logger.debug("Header Record Received: " + data);
-        } else if (data.contains("Q|")) {  // Query Record
+        } else if (firstSegment.contains("Q|")) {  // Query Record
             receivingQuery = false;
             respondingQuery = true;
             needToSendHeaderRecordForQuery = true;
@@ -468,25 +483,43 @@ public class IndikoServer {
             queryRecord = parseQueryRecord(data);
             patientDataBundle.getQueryRecords().add(queryRecord);
             logger.debug("Parsed the Query Record: " + queryRecord);
-        } else if (data.contains("P|")) {  // Patient Record
+        } else if (firstSegment.contains("P|")) {  // Patient Record
             logger.debug("Patient Record Received: " + data);
             patientRecord = parsePatientRecord(data);
             patientDataBundle.setPatientRecord(patientRecord);
             logger.debug("Patient Record Parsed: " + patientRecord);
-        } else if (data.contains("R|")) {  // Result Record
+        } else if (firstSegment.contains("R|")) {  // Result Record
             logger.debug("Result Record Received: " + data);
             respondingResults = true;
             respondingQuery = false;
-            resultRecord = parseResultsRecord(data);
+            resultRecord = parseResultsRecord(data, sampleId);
             patientDataBundle.getResultsRecords().add(resultRecord);
             logger.debug("Result Record Parsed: " + resultRecord);
-        } else if (data.contains("L|")) {  // Termination Record
+        } else if (firstSegment.contains("L|")) {  // Termination Record
             logger.debug("Termination Record Received: " + data);
-        } else if (data.contains("C|")) {  // COmment Record
+        } else if (firstSegment.contains("C|")) {  // COmment Record
             logger.debug("COmment Record Received: " + data);
+        } else if (firstSegment.contains("O|")) {  // COmment Record
+            String sampleIdInOrderSegment = extractSampleIdFromOrderSegment(data);
+            sampleId = sampleIdInOrderSegment;
+            logger.debug("Order Record Received: " + data);
         } else {
             logger.debug("Unknown Record Received: " + data);
         }
+    }
+
+    public static String extractSampleIdFromOrderSegment(String data) {
+        // Split the data string into segments based on the "|" delimiter
+        String[] fields = data.split("\\|");
+
+        // Ensure there are enough segments to avoid ArrayIndexOutOfBoundsException
+        if (fields.length > 2) {
+            return fields[2]; // Return the third segment which contains the sample ID
+        }
+
+        // Log an error or handle the case where the expected data is not present
+        logger.error("Not enough segments in data to extract sample ID: {}", data);
+        return ""; // Return an empty string or handle accordingly
     }
 
     public static PatientRecord parsePatientRecord(String patientSegment) {
@@ -519,44 +552,55 @@ public class IndikoServer {
         );
     }
 
-    public static ResultsRecord parseResultsRecord(String resultSegment) {
-        // Split the segment into fields
+    public static ResultsRecord parseResultsRecord(String resultSegment, String sampleId) {
         String[] fields = resultSegment.split("\\|");
+
+        if (fields.length < 6) {
+            logger.error("Incomplete data in result segment: {}", resultSegment);
+            return null;
+        }
 
         // Extract the frame number by removing non-numeric characters
         int frameNumber = Integer.parseInt(fields[0].replaceAll("[^0-9]", ""));
-        logger.debug("Frame number extracted: {}", frameNumber);
 
-        // Test code should be correctly identified assuming it's provided correctly in the fields[1]
-        String testCode = fields[1];
-        logger.debug("Test code extracted: {}", testCode);
-
-        // Result value parsing assumes the result is in a composite field separated by carets
-        double resultValue = 0.0;
-        try {
-            String[] resultParts = fields[2].split("\\^");
-            resultValue = Double.parseDouble(resultParts[3]); // Assuming the result value is always at position 3
-            logger.debug("Result value extracted: {}", resultValue);
-        } catch (NumberFormatException e) {
-            logger.error("Failed to parse result value from segment: {}", resultSegment, e);
+        // Extract test code after three carets
+        String testCode = "";
+        String[] testParts = fields[2].split("\\^");
+        if (testParts.length > 3) {
+            testCode = testParts[3];
+        } else {
+            logger.error("Test code parsing error: not enough parts in {}", fields[2]);
+            return null;
         }
 
-        // Units and other details
-        String resultUnits = fields[3];
-        logger.debug("Result units extracted: {}", resultUnits);
-        String resultDateTime = fields[4];
-        logger.debug("Result date-time extracted: {}", resultDateTime);
-        String instrumentName = fields[5];
-        logger.debug("Instrument name extracted: {}", instrumentName);
+        // Extract the result value
+        double resultValue = 0.0;
+        try {
+            resultValue = Double.parseDouble(fields[3]);
+        } catch (NumberFormatException e) {
+            logger.error("Failed to parse result value: {}", fields[3]);
+            return null;
+        }
 
-        // Return a new ResultsRecord object initialized with extracted values
+        // Extract the result unit
+        String resultUnits = fields[4];
+
+        // Remaining parameters not present in the input will use default or empty values
+        String resultDateTime = fields[10];
+        String instrumentName = fields[11];
+
         return new ResultsRecord(
                 frameNumber,
                 testCode,
                 resultValue,
+                0.0, // minVal as default
+                0.0, // maxVal as default
+                "", // flag as empty
+                "", // sampleType as empty
                 resultUnits,
                 resultDateTime,
-                instrumentName
+                instrumentName,
+                sampleId // sampleId as empty
         );
     }
 
