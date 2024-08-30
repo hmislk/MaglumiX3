@@ -1,12 +1,10 @@
 {
     "analyzerDetails": {
         "analyzerName": "IndikoPlus",
-        "serialNumber": "12345-67890",
-        "analyzerId": "1",
-        "analyzerIP": "172.16.241.71",
-        "analyzerPort": 10100,
-        "hostPort": 10100,
-        "hostIp": "172.16.241.71",
+        "serialNumber": "0002",
+        "analyzerId": "223",
+        "analyzerIP": "192.168.203.202",
+        "analyzerPort": 5000,
         "communicationType": "TCP/IP",
         "socketCommunicationType": "Client",
         "resultSendingCriteria": "Sample",
@@ -16,11 +14,11 @@
         "sampleIdSendingDelay": "0",
         "resultSendingDelay": "0",
         "qcResultSendingInUse": "Yes",
-        "departmentAnalyzerId": "117106",
-        "departmentId": "9209"
+        "departmentAnalyzerId": "193728",
+        "departmentId": "9039"
     },
     "limsSettings": {
-        "limsServerBaseUrl": "http://172.16.222.100:8080/ruhunu/api/middleware",
+        "limsServerBaseUrl": "http://124.43.4.189:8010/ruhunu/api/middleware",
         "username": "buddhika",
         "password": "Buddhika123@"
     }
