@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.carecode.mw.lims.mw</groupId>
-    <artifactId>Indiko</artifactId>
+    <artifactId>IndikoLocal</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
@@ -34,7 +34,7 @@
         <dependency>
             <groupId>com.github.hmislk</groupId>
             <artifactId>lims-middleware-libraries</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.3</version>
         </dependency>
 
         
@@ -57,5 +57,5 @@
         <exec.mainClass>org.carecode.mw.lims.mw.maglumix3.MaglumiX3</exec.mainClass>
     </properties>
 
-    <name>Indiko</name>
+    <name>IndikoLocal</name>
 </project>

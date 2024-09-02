@@ -15,7 +15,7 @@ public class AnalyzerCommunicator {
     private static final char ETX = 0x03; // End of Text
 
     public static void startServer() {
-        int middlewarePort = Indiko.middlewareSettings.getAnalyzerDetails().getAnalyzerPort();
+        int middlewarePort = SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerPort();
 
         try (ServerSocket serverSocket = new ServerSocket(middlewarePort)) {
             System.out.println("Server started, listening on port: " + middlewarePort);
