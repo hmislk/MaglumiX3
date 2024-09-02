@@ -1,0 +1,25 @@
+{
+    "analyzerDetails": {
+        "analyzerName": "MaglumiX3",
+        "serialNumber": "0002",
+        "analyzerId": "223",
+        "analyzerIP": "192.168.203.200",
+        "analyzerPort": 5500,
+        "communicationType": "TCP/IP",
+        "socketCommunicationType": "Client",
+        "resultSendingCriteria": "Sample",
+        "automaticResultSending": "Yes",
+        "hostQueryInUse": "Yes",
+        "multipleHostQuery": "No",
+        "sampleIdSendingDelay": "0",
+        "resultSendingDelay": "0",
+        "qcResultSendingInUse": "Yes",
+        "departmentAnalyzerId": "193728",
+        "departmentId": "9039"
+    },
+    "limsSettings": {
+        "limsServerBaseUrl": "http://124.43.4.189:8010/ruhunu/api/middleware",
+        "username": "buddhika",
+        "password": "Buddhika123@"
+    }
+}

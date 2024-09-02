@@ -1,47 +1,60 @@
-package org.carecode.mw.lims.mw.maglumix3;
+package org.carecode.mw.lims.mw.MaglumiX3;
 
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.net.Socket;
-import java.nio.charset.StandardCharsets;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.carecode.lims.libraries.DataBundle;
+import org.carecode.lims.libraries.PatientRecord;
+import org.carecode.lims.libraries.QueryRecord;
+import org.carecode.lims.libraries.ResultsRecord;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-import com.google.gson.JsonSyntaxException;
-
-/**
- *
- * @author Buddhika
- */
 public class MaglumiX3 {
 
-    private static JsonObject settings;
+    static boolean testingPullingTestOrders = false;
+    static boolean testingPushingTestResults = false;
+
+    public static final Logger logger = LogManager.getLogger(MaglumiX3.class);
 
     public static void main(String[] args) {
-        System.out.println("MDGPHM");
-        SettingsLoader.loadSettings();
+        if (testingPullingTestOrders) {
+            logger.info("Loading settings...");
+            SettingsLoader.loadSettings();
+            logger.info("Settings loaded successfully.");
+            QueryRecord queryRecord = new QueryRecord(0, "101010", null, null);
+            logger.info("queryRecord=" + queryRecord);
+            DataBundle pb = LISCommunicator.pullTestOrdersForSampleRequests(queryRecord);
+            logger.info("pb = " + pb);
+            System.exit(0);
+        } else if (testingPushingTestResults) {
+            logger.info("Loading settings...");
+            SettingsLoader.loadSettings();
+            logger.info("Settings loaded successfully.");
+            DataBundle pdb = new DataBundle();
+            PatientRecord patientRecord = new PatientRecord(0, "1212", "1212", "Buddhika", "Ari", "Male", "Sinhalese", "19750914", "Galle", "0715812399", "Niluka GUnasekara");
+            
+            pdb.setPatientRecord(patientRecord);
 
-        // Start thread to listen for analyzer messages
-        Thread analyzerListenerThread = new Thread(new AnalyzerListener());
-        analyzerListenerThread.start();
+            ResultsRecord r1 = new ResultsRecord(1, "GLU", 112.0, "mg/dl", "202408172147", "Indigo", "0010");
+            pdb.getResultsRecords().add(r1);
+            
+            QueryRecord qr = new QueryRecord(0, "1101", "1101", "");
+            pdb.getQueryRecords().add(qr);
 
-        // Start thread to periodically send requests to LIS
-        Thread lisCommunicatorThread = new Thread(new LisCommunicator());
-        lisCommunicatorThread.start();
-    }
-
-    public static void loadSettings() {
-        try (FileReader reader = new FileReader("config.json")) {
-            JsonParser parser = new JsonParser();
-            JsonElement jsonElement = parser.parse(reader);
-            settings = jsonElement.getAsJsonObject();
-        } catch (IOException | JsonSyntaxException e) {
-            e.printStackTrace();
+            LISCommunicator.pushResults(pdb);
+            System.exit(0);
         }
+        logger.info("Starting Indiko middleware...");
+        try {
+            logger.info("Loading settings...");
+            SettingsLoader.loadSettings();
+            logger.info("Settings loaded successfully.");
+        } catch (Exception e) {
+            logger.error("Failed to load settings.", e);
+            return;
+        }
+
+        int port = SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerPort();
+        MaglumiX3Server server = new MaglumiX3Server();
+        server.start(port);
     }
 
-  
 }
