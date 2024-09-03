@@ -113,7 +113,7 @@ public class MaglumiX3Server {
                     case CARRIAGE_RETURN: // Handle CR as potential end of message
                         String message = messageBuilder.toString();
                         System.out.println("Complete HL7 message received: " + message);
-                        processHL7Messages(message);
+                        processHL7Messages(message);//this is important
                         out.write(ACKNOWLEDGEMENT);
                         out.flush();
                         System.out.println("Sent ACK after message processing");
@@ -145,6 +145,7 @@ public class MaglumiX3Server {
     }
 
     // Process the individual HL7 messages received
+    
     public void processHL7Messages(String combinedMessages) {
         String[] individualMessages = splitHL7Messages(combinedMessages);
         for (String message : individualMessages) {
