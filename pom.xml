@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>org.carecode.mw.lims.mw</groupId>
-    <artifactId>IndikoLocal</artifactId>
+    <artifactId>MaglumiX3</artifactId>
     <version>1.0</version>
     <packaging>jar</packaging>
 
@@ -57,5 +57,5 @@
         <exec.mainClass>org.carecode.mw.lims.mw.maglumix3.MaglumiX3</exec.mainClass>
     </properties>
 
-    <name>IndikoLocal</name>
+    <name>MaglumiX3</name>
 </project>

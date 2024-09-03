@@ -1,4 +1,4 @@
-package org.carecode.mw.lims.mw.indiko;
+package org.carecode.mw.lims.mw.MaglumiX3;
 
 import com.google.gson.Gson;
 import java.io.FileReader;

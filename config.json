@@ -1,10 +1,10 @@
 {
     "analyzerDetails": {
-        "analyzerName": "IndikoPlus",
+        "analyzerName": "MaglumiX3",
         "serialNumber": "0002",
         "analyzerId": "223",
-        "analyzerIP": "192.168.203.202",
-        "analyzerPort": 5000,
+        "analyzerIP": "192.168.203.200",
+        "analyzerPort": 5500,
         "communicationType": "TCP/IP",
         "socketCommunicationType": "Client",
         "resultSendingCriteria": "Sample",

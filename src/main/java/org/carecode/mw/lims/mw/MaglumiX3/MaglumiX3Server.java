@@ -1,4 +1,4 @@
-package org.carecode.mw.lims.mw.indiko;
+package org.carecode.mw.lims.mw.MaglumiX3;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -20,9 +20,9 @@ import org.carecode.lims.libraries.PatientRecord;
 import org.carecode.lims.libraries.QueryRecord;
 import org.carecode.lims.libraries.ResultsRecord;
 
-public class IndikoServer {
+public class MaglumiX3Server {
 
-    private static final Logger logger = LogManager.getLogger(IndikoServer.class);
+    private static final Logger logger = LogManager.getLogger(MaglumiX3Server.class);
 
     private static final char ENQ = 0x05;
     private static final char ACK = 0x06;
@@ -61,7 +61,81 @@ public class IndikoServer {
     OrderRecord orderRecord;
     QueryRecord queryRecord;
 
+    private static final int START_OF_TEXT = 2;  // ASCII value for STX
+    private static final int END_OF_TEXT = 3;    // ASCII value for ETX
+    private static final int END_OF_TRANSMISSION = 4; // ASCII value for EOT
+    private static final int ENQUIRY = 5;        // ASCII value for ENQ
+    private static final int ACKNOWLEDGEMENT = 6; // ASCII value for ACK
+    private static final int CARRIAGE_RETURN = 13; // ASCII value for CR, add if needed
+
     private ServerSocket serverSocket;
+
+    private void handleClient(Socket clientSocket) {
+        try (InputStream in = new BufferedInputStream(clientSocket.getInputStream()); OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream())) {
+            boolean sessionActive = true;
+            StringBuilder messageBuilder = new StringBuilder();
+
+            while (sessionActive) {
+                System.out.println("Waiting for data...");
+                int data = in.read();
+                System.out.println("Data received: " + data + " (char: " + (char) data + ")");
+
+                if (data == -1) { // Client has closed the connection
+                    sessionActive = false;
+                    continue;
+                }
+
+                switch (data) {
+                    case ENQUIRY:
+                        System.out.println("Received ENQ");
+                        out.write(ACKNOWLEDGEMENT);
+                        out.flush();
+                        System.out.println("Sent ACK");
+                        break;
+                    case START_OF_TEXT:
+                        messageBuilder = new StringBuilder(); // Reset the StringBuilder for a new message
+                        System.out.println("Start of text detected");
+                        break;
+                    case END_OF_TEXT:
+                    case CARRIAGE_RETURN: // Handle CR as potential end of message
+                        String message = messageBuilder.toString();
+                        System.out.println("Complete HL7 message received: " + message);
+                        processHL7Message(message);
+                        out.write(ACKNOWLEDGEMENT);
+                        out.flush();
+                        System.out.println("Sent ACK after message processing");
+                        break;
+                    case END_OF_TRANSMISSION:
+                        System.out.println("EOT Received, closing connection");
+                        sessionActive = false; // End the session as EOT is received
+                        break;
+                    default:
+                        if (data != START_OF_TEXT && data != END_OF_TRANSMISSION) {
+                            messageBuilder.append((char) data); // Build the HL7 message
+                            System.out.println("Building message: " + messageBuilder);
+                        }
+                        break;
+                }
+            }
+        } catch (IOException e) {
+            System.err.println("Error during communication with client: " + e.getMessage());
+            e.printStackTrace();
+        } finally {
+            try {
+                clientSocket.close();
+                System.out.println("Client socket closed");
+            } catch (IOException e) {
+                System.err.println("Error while closing the client socket: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private void processHL7Message(String message) {
+        // Process the HL7 message here
+        // This method should be defined to handle parsing and further processing of the HL7 message
+        logger.info("Processing HL7 Message: " + message);
+    }
 
     public void start(int port) {
         try {
@@ -93,7 +167,7 @@ public class IndikoServer {
         }
     }
 
-    private void handleClient(Socket clientSocket) {
+    private void handleClientOld(Socket clientSocket) {
         try (InputStream in = new BufferedInputStream(clientSocket.getInputStream()); OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream())) {
             StringBuilder asciiDebugInfo = new StringBuilder();
             boolean sessionActive = true;

@@ -1,4 +1,4 @@
-package org.carecode.mw.lims.mw.indiko;
+package org.carecode.mw.lims.mw.MaglumiX3;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -7,12 +7,12 @@ import org.carecode.lims.libraries.PatientRecord;
 import org.carecode.lims.libraries.QueryRecord;
 import org.carecode.lims.libraries.ResultsRecord;
 
-public class Indiko {
+public class MaglumiX3 {
 
     static boolean testingPullingTestOrders = false;
     static boolean testingPushingTestResults = false;
 
-    public static final Logger logger = LogManager.getLogger(Indiko.class);
+    public static final Logger logger = LogManager.getLogger(MaglumiX3.class);
 
     public static void main(String[] args) {
         if (testingPullingTestOrders) {
@@ -53,7 +53,7 @@ public class Indiko {
         }
 
         int port = SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerPort();
-        IndikoServer server = new IndikoServer();
+        MaglumiX3Server server = new MaglumiX3Server();
         server.start(port);
     }
 
