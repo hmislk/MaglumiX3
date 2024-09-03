@@ -33,7 +33,7 @@ public class MaglumiX3 {
             
             pdb.setPatientRecord(patientRecord);
 
-            ResultsRecord r1 = new ResultsRecord(1, "GLU", 112.0, "mg/dl", "202408172147", "Indigo", "0010");
+            ResultsRecord r1 = new ResultsRecord(1, "GLU", "112.0", "mg/dl", "202408172147", "Indigo", "0010");
             pdb.getResultsRecords().add(r1);
             
             QueryRecord qr = new QueryRecord(0, "1101", "1101", "");
