@@ -1,5 +1,7 @@
 package org.carecode.mw.lims.mw.MaglumiX3;
 
+import ca.uhn.hl7v2.DefaultHapiContext;
+import ca.uhn.hl7v2.HapiContext;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
 import java.io.IOException;
@@ -19,6 +21,17 @@ import org.carecode.lims.libraries.OrderRecord;
 import org.carecode.lims.libraries.PatientRecord;
 import org.carecode.lims.libraries.QueryRecord;
 import org.carecode.lims.libraries.ResultsRecord;
+import ca.uhn.hl7v2.model.Message;
+import ca.uhn.hl7v2.model.Segment;
+import ca.uhn.hl7v2.parser.Parser;
+import ca.uhn.hl7v2.parser.PipeParser;
+import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.segment.MSH;
+import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.model.v25.segment.OBR;
+import ca.uhn.hl7v2.model.v25.segment.OBX;
+import java.util.ArrayList;
+import java.util.logging.Level;
 
 public class MaglumiX3Server {
 
@@ -100,7 +113,7 @@ public class MaglumiX3Server {
                     case CARRIAGE_RETURN: // Handle CR as potential end of message
                         String message = messageBuilder.toString();
                         System.out.println("Complete HL7 message received: " + message);
-                        processHL7Message(message);
+                        processHL7Messages(message);//this is important
                         out.write(ACKNOWLEDGEMENT);
                         out.flush();
                         System.out.println("Sent ACK after message processing");
@@ -131,10 +144,262 @@ public class MaglumiX3Server {
         }
     }
 
+    // Process the individual HL7 messages received
+    
+    public void processHL7Messages(String combinedMessages) {
+        String[] individualMessages = splitHL7Messages(combinedMessages);
+        for (String message : individualMessages) {
+            if (!message.trim().isEmpty()) {
+                processIndividualHL7Message(message);
+            }
+        }
+    }
+
+    // Split the combined string of HL7 messages into individual messages
+    private String[] splitHL7Messages(String combinedMessages) {
+        return combinedMessages.split("(?<=\\r)\\n");
+    }
+
+    // Process each individual HL7 message and determine action based on message type
+    private void processIndividualHL7Message(String message) {
+        HapiContext context = new DefaultHapiContext();
+        Parser parser = context.getPipeParser();
+
+        try {
+            Message hl7Message = parser.parse(message);
+            MSH msh = (MSH) hl7Message.get("MSH");
+            String messageType = msh.getMessageType().getMessageCode().getValue();
+
+            switch (messageType) {
+                case "OUL^R22":
+                    handleResultMessage(hl7Message);
+                    break;
+                case "QRY^R02":
+                    handleQueryMessage(hl7Message);
+                    break;
+                default:
+                    System.err.println("Unhandled message type: " + messageType);
+                    break;
+            }
+        } catch (Exception e) {
+            System.err.println("Error processing individual HL7 message: " + e.getMessage());
+        } finally {
+            try {
+                context.close();
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(MaglumiX3Server.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+
+    // Create a QueryRecord from a parsed HL7 message
+    private void handleQueryMessage(Message hl7Message) {
+        // Assume we extract sampleId and create a QueryRecord accordingly
+        String sampleId = extractSampleId(hl7Message);  // Implement this method based on your message structure
+        QueryRecord qr = new QueryRecord(0, sampleId, "universalTestId", "queryType");
+        LISCommunicator.pullTestOrdersForSampleRequests(queryRecord);
+    }
+
+    public String extractSampleId(Message hl7Message) {
+        try {
+            // Extracting the MSH segment to access message details
+            MSH msh = (MSH) hl7Message.get("MSH");
+
+            // We will manually parse the field from the MSH segment since QPD-like data is actually here
+            String messageType = msh.getMessageType().getMessageCode().getValue();
+            if (!"TSREQ".equals(messageType)) {
+                throw new IllegalArgumentException("Unsupported message type for sample ID extraction: " + messageType);
+            }
+
+            // The field index might vary; you need to confirm the index from a sample message
+            // Assuming the structure of the QPD-like data is in MSH-9 field
+            String fieldContent = msh.getField(9, 0).encode();
+
+            // Assuming the structure is `215698^^NA003^1` and we want the first part before the first '^'
+            String[] parts = fieldContent.split("\\^");
+            if (parts.length > 0) {
+                return parts[0];  // Returns '215698' as the sample ID
+            } else {
+                return "Sample ID not found";  // Handling case where no data is available
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Error extracting sample ID: " + e.getMessage();
+        }
+    }
+
+//    private void handleResultMessage(Message hl7Message) {
+//        ORU_R01 message = (ORU_R01) hl7Message;
+//        DataBundle dataBundle = new DataBundle();
+//        dataBundle.setMiddlewareSettings(SettingsLoader.getSettings());
+//
+//        // Patient information
+//        PID pid = message.getPATIENT_RESULT().getPATIENT().getPID();
+//        String patientId = pid.getPatientIdentifierList(0).getIDNumber().getValue();
+//        String additionalId = pid.getPatientIdentifierList(0).getIdentifierTypeCode().getValue();
+//        String patientName = pid.getPatientName(0).getFamilyName().getSurname().getValue();
+//        String patientSecondName = pid.getPatientName(0).getGivenName().getValue();
+//        String patientSex = pid.getAdministrativeSex().getValue();
+//        String race = pid.getRace(0).getIdentifier().getValue();
+//        String dob = "";
+//        String patientAddress = pid.getPatientAddress(0).getStreetAddress().getStreetOrMailingAddress().getValue();
+//        String patientPhoneNumber = "";
+//        String attendingDoctor = message.getPATIENT_RESULT().getPATIENT().getVISIT().getPV1().getAttendingDoctor(0).getFamilyName().getSurname().getValue();
+//
+//        PatientRecord pr = new PatientRecord(0,
+//                patientId,
+//                additionalId,
+//                patientName,
+//                patientSecondName,
+//                patientSex,
+//                race,
+//                dob,
+//                patientAddress,
+//                patientPhoneNumber,
+//                attendingDoctor);
+//        dataBundle.setPatientRecord(pr);
+//
+//        // Iterate over all OBX segments within the first OBR segment
+//        OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
+//        int obxCount = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATIONReps();
+//
+//        for (int i = 0; i < obxCount; i++) {
+//            OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION(i).getOBX();
+//            String testCode = obx.getObservationIdentifier().getIdentifier().getValue();
+//            String resultValueString = obx.getObservationValue(0).getData().toString();
+//            String resultUnits = obx.getUnits().getIdentifier().getValue();
+//            String resultDateTime = "";
+//            String instrumentName = SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName();
+//            String sampleId = obr.getFillerOrderNumber().getEntityIdentifier().getValue();
+//
+//            ResultsRecord rr = new ResultsRecord(testCode, resultValueString, resultUnits, resultDateTime, instrumentName, sampleId);
+//
+//            LISCommunicator.pushResults(patientDataBundle);
+//
+//            dataBundle.getResultsRecords().add(rr);
+//        }
+//
+//        logger.info("Handling Result Message: " + hl7Message.toString());
+//    }
     private void processHL7Message(String message) {
-        // Process the HL7 message here
-        // This method should be defined to handle parsing and further processing of the HL7 message
         logger.info("Processing HL7 Message: " + message);
+
+        // Create a parser instance (HAPI library)
+        Parser parser = new PipeParser();
+
+        try {
+            // Parse the message string into a Message object
+            Message hl7Message = parser.parse(message);
+
+            // Extract MSH segment
+            Segment mshSegment = (Segment) hl7Message.get("MSH");
+
+            // Extract message type and trigger event (e.g., ADT^A01)
+            String messageType = mshSegment.getField(9, 0).toString();
+            String triggerEvent = mshSegment.getField(10, 0).toString();
+
+            // Log the extracted values
+            logger.info("Message Type: " + messageType);
+            logger.info("Trigger Event: " + triggerEvent);
+
+            // Route based on type and event
+            switch (messageType) {
+                case "OUL^R22":
+                    handleResultMessage(hl7Message);
+                    break;
+                // Add more cases as needed for other types
+                default:
+                    logger.warn("Unhandled message type: " + messageType);
+            }
+        } catch (Exception e) {
+            logger.error("Failed to parse HL7 message", e);
+        }
+    }
+
+    public List<QueryRecord> createQueryRecordsFromMessages(String combinedMessages) throws IOException {
+        List<QueryRecord> records = new ArrayList<>();
+        String[] individualMessages = combinedMessages.split("MSH");
+
+        HapiContext context = new DefaultHapiContext();
+        Parser parser = context.getPipeParser();
+
+        try {
+            for (String rawMessage : individualMessages) {
+                if (!rawMessage.trim().isEmpty()) {
+                    // Prepend "MSH" as it's removed by the split operation
+                    String message = "MSH" + rawMessage;
+
+                    try {
+                        Message hl7Message = parser.parse(message);
+                        // Manually navigate to the right segment and field to extract the sample ID
+                        String sampleId = extractSampleId(hl7Message);
+                        QueryRecord qr = new QueryRecord(0, sampleId, "universalTestId", "queryType");
+                        records.add(qr);
+                    } catch (Exception e) {
+                        System.err.println("Error parsing message: " + e.getMessage());
+                    }
+                }
+            }
+        } finally {
+            context.close();
+        }
+
+        return records;
+    }
+
+// Example handler method for result messages
+    private void handleResultMessage(Message hl7Message) {
+        ORU_R01 message = (ORU_R01) hl7Message;
+        DataBundle dataBundle = new DataBundle();
+        dataBundle.setMiddlewareSettings(SettingsLoader.getSettings());
+
+        // Patient information
+        PID pid = message.getPATIENT_RESULT().getPATIENT().getPID();
+        String patientId = pid.getPatientIdentifierList(0).getIDNumber().getValue();
+        String additionalId = pid.getPatientIdentifierList(0).getIdentifierTypeCode().getValue();
+        String patientName = pid.getPatientName(0).getFamilyName().getSurname().getValue();
+        String patientSecondName = pid.getPatientName(0).getGivenName().getValue();
+        String patientSex = pid.getAdministrativeSex().getValue();
+        String race = pid.getRace(0).getIdentifier().getValue();
+        String dob = "";
+        String patientAddress = pid.getPatientAddress(0).getStreetAddress().getStreetOrMailingAddress().getValue();
+        String patientPhoneNumber = "";
+        String attendingDoctor = message.getPATIENT_RESULT().getPATIENT().getVISIT().getPV1().getAttendingDoctor(0).getFamilyName().getSurname().getValue();
+
+        PatientRecord pr = new PatientRecord(0,
+                patientId,
+                additionalId,
+                patientName,
+                patientSecondName,
+                patientSex,
+                race,
+                dob,
+                patientAddress,
+                patientPhoneNumber,
+                attendingDoctor);
+        dataBundle.setPatientRecord(pr);
+
+        // Iterate over all OBX segments within the first OBR segment
+        OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
+        int obxCount = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATIONReps();
+
+        for (int i = 0; i < obxCount; i++) {
+            OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION(i).getOBX();
+            String testCode = obx.getObservationIdentifier().getIdentifier().getValue();
+            String resultValueString = obx.getObservationValue(0).getData().toString();
+            String resultUnits = obx.getUnits().getIdentifier().getValue();
+            String resultDateTime = "";
+            String instrumentName = SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName();
+            String sampleId = obr.getFillerOrderNumber().getEntityIdentifier().getValue();
+
+            ResultsRecord rr = new ResultsRecord(testCode, resultValueString, resultUnits, resultDateTime, instrumentName, sampleId);
+
+            LISCommunicator.pushResults(patientDataBundle);
+
+            dataBundle.getResultsRecords().add(rr);
+        }
+
+        logger.info("Handling Result Message: " + hl7Message.toString());
     }
 
     public void start(int port) {
@@ -640,13 +905,7 @@ public class MaglumiX3Server {
         logger.debug("Test code extracted: {}", testCode);
 
         // Result value parsing assumes the result is in the fourth field
-        double resultValue = 0.0;
-        try {
-            resultValue = Double.parseDouble(fields[3]);
-            logger.debug("Result value extracted: {}", resultValue);
-        } catch (NumberFormatException e) {
-            logger.error("Failed to parse result value from segment: {}", resultSegment, e);
-        }
+        String resultValue = fields[3];
 
         // Units and other details
         String resultUnits = fields[4];
