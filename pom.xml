@@ -36,10 +36,18 @@
             <artifactId>lims-middleware-libraries</artifactId>
             <version>1.1.4</version>
         </dependency>
-
-        
-        
-        
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-base</artifactId>
+            <version>2.3</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi</groupId>
+            <artifactId>hapi-structures-v25</artifactId>
+            <version>2.3</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <repositories>
