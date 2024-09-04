@@ -25,25 +25,21 @@ import org.carecode.lims.libraries.ResultsRecord;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Segment;
 import ca.uhn.hl7v2.model.v25.group.OUL_R22_ORDER;
-import ca.uhn.hl7v2.model.v25.group.OUL_R22_PATIENT;
 import ca.uhn.hl7v2.model.v25.group.OUL_R22_RESULT;
 import ca.uhn.hl7v2.model.v25.group.OUL_R22_SPECIMEN;
-import ca.uhn.hl7v2.model.v25.group.OUL_R22_TIMING_QTY;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
-import ca.uhn.hl7v2.model.v25.message.ORU_R01;
 import ca.uhn.hl7v2.model.v25.message.OUL_R22;
-import ca.uhn.hl7v2.model.v25.segment.CTI;
 import ca.uhn.hl7v2.model.v25.segment.MSH;
 import ca.uhn.hl7v2.model.v25.segment.NTE;
-import ca.uhn.hl7v2.model.v25.segment.PID;
 import ca.uhn.hl7v2.model.v25.segment.OBR;
 import ca.uhn.hl7v2.model.v25.segment.OBX;
 import ca.uhn.hl7v2.model.v25.segment.ORC;
 import ca.uhn.hl7v2.model.v25.segment.SPM;
-import java.util.ArrayList;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 public class MaglumiX3Server {
 
@@ -403,8 +399,228 @@ public class MaglumiX3Server {
         return records;
     }
 
-    private void handleResultMessage(String hl7RawMessage) {
-        System.out.println("hl7RawMessage = " + hl7RawMessage);
+    
+    private void handleResultMessage(String astmMessage) {
+        System.out.println("ASTM Raw Message = " + astmMessage);
+
+        // Regex to extract sample ID from the 'O' record
+        String sampleIdRegex = "O\\|1\\|([^\\|^]*)";
+        Pattern sampleIdPattern = Pattern.compile(sampleIdRegex);
+        Matcher sampleIdMatcher = sampleIdPattern.matcher(astmMessage);
+        String sampleId = "";
+        if (sampleIdMatcher.find()) {
+            sampleId = sampleIdMatcher.group(1).trim(); // Extract the sample ID, remove any leading/trailing spaces
+        }
+
+        // Regex to find all 'R' records (result records)
+        String resultsRegex = "^R\\|.*$";
+        Pattern resultsPattern = Pattern.compile(resultsRegex, Pattern.MULTILINE);
+        Matcher resultsMatcher = resultsPattern.matcher(astmMessage);
+        ArrayList<String> resultRecords = new ArrayList<>();
+
+        while (resultsMatcher.find()) {
+            resultRecords.add(resultsMatcher.group()); // Add each result record to the list
+        }
+
+        // Output the extracted sample ID and result records
+        System.out.println("Sample ID: " + sampleId);
+        System.out.println("Result Records:");
+        
+        
+        DataBundle db = new DataBundle();
+        db.setMiddlewareSettings(SettingsLoader.getSettings());
+        
+        
+        PatientRecord patientRecord = new PatientRecord(0, sampleId, sampleId,
+                sampleId, sampleId, "", "", "", "Galle", "0715812399", "Niluka Gunasekara");
+
+        db.setPatientRecord(patientRecord);
+
+        for (String record : resultRecords) {
+            String testCode = ""; // Test code, e.g., TSH, FT4
+            String testResult = ""; // Numeric result of the test
+            String referenceRange = ""; // Reference range
+            String unit = ""; // Unit of measurement
+
+            // Parsing each record for details
+            String[] parts = record.split("\\|");
+            if (parts.length > 3) {
+                // Adjust this line based on the actual placement of the test code
+                String[] testDetails = parts[2].split("\\^");
+                if (testDetails.length > 1) {
+                    testCode = testDetails[testDetails.length - 1]; // Assuming the code is the last part after the last caret
+                }
+                testResult = parts[3]; // Result value
+                unit = parts[4]; // Unit
+                referenceRange = parts[5]; // Reference range
+
+                QueryRecord qr = new QueryRecord(0, sampleId, sampleId, "");
+                db.getQueryRecords().add(qr);
+
+                ResultsRecord r1 = new ResultsRecord(
+                        testCode,
+                        testResult,
+                        unit,
+                        "",
+                        SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName(),
+                        sampleId);
+                db.getResultsRecords().add(r1);
+
+            }
+            System.out.println("Test Code: " + testCode);
+            System.out.println("Result: " + testResult);
+            System.out.println("Unit: " + unit);
+            System.out.println("Reference Range: " + referenceRange);
+        }
+        //this is fine. It should work, can we run and see ok dr.
+        LISCommunicator.pushResults(db);
+    }
+    
+    
+    private void handleResultMessage1(String astmMessage) {
+        System.out.println("ASTM Raw Message = " + astmMessage);
+
+        // Regex to extract sample ID from the 'O' record
+        String sampleIdRegex = "O\\|1\\|([^\\|^]*)";
+        Pattern sampleIdPattern = Pattern.compile(sampleIdRegex);
+        Matcher sampleIdMatcher = sampleIdPattern.matcher(astmMessage);
+        String sampleId = "";
+        if (sampleIdMatcher.find()) {
+            sampleId = sampleIdMatcher.group(1).trim(); // Extract the sample ID, remove any leading/trailing spaces
+        }
+
+        // Regex to find all 'R' records (result records)
+        String resultsRegex = "^R\\|.*$";
+        Pattern resultsPattern = Pattern.compile(resultsRegex, Pattern.MULTILINE);
+        Matcher resultsMatcher = resultsPattern.matcher(astmMessage);
+        ArrayList<String> resultRecords = new ArrayList<>();
+
+        while (resultsMatcher.find()) {
+            resultRecords.add(resultsMatcher.group()); // Add each result record to the list
+        }
+
+        // Output the extracted sample ID and result records
+        System.out.println("Sample ID: " + sampleId);
+        System.out.println("Result Records:");
+
+        DataBundle db = new DataBundle();
+        db.setMiddlewareSettings(SettingsLoader.getSettings());
+
+        PatientRecord patientRecord = new PatientRecord(0, sampleId, sampleId,
+                sampleId, sampleId, "", "", "", "Galle", "0715812399", "Niluka Gunasekara");
+
+        db.setPatientRecord(patientRecord);
+
+        for (String record : resultRecords) {
+            String testCode = ""; // Test code, e.g., TSH, FT4
+            String testResult = ""; // Numeric result of the test
+            String referenceRange = ""; // Reference range
+            String unit = ""; // Unit of measurement
+
+            // Parsing each record for details
+            String[] parts = record.split("\\|");
+            if (parts.length > 3) {
+                // Adjust this line based on the actual placement of the test code
+                String[] testDetails = parts[2].split("\\^");
+                if (testDetails.length > 1) {
+                    testCode = testDetails[testDetails.length - 1]; // Assuming the code is the last part after the last caret
+                }
+                testResult = parts[3]; // Result value
+                unit = parts[4]; // Unit
+                referenceRange = parts[5]; // Reference range
+
+                QueryRecord qr = new QueryRecord(0, sampleId, sampleId, "");
+                db.getQueryRecords().add(qr);
+
+                ResultsRecord r1 = new ResultsRecord(
+                        testCode,
+                        testResult,
+                        unit,
+                        "",
+                        SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName(),
+                        sampleId);
+                db.getResultsRecords().add(r1);
+
+            }
+
+            System.out.println("Test Code: " + testCode);
+            System.out.println("Result: " + testResult);
+            System.out.println("Unit: " + unit);
+            System.out.println("Reference Range: " + referenceRange);
+        }
+        
+         LISCommunicator.pushResults(db);
+    }
+
+    private void handleResultMessageOld(String astmMessage) {
+        System.out.println("ASTM Raw Message = " + astmMessage);
+
+        // Regex to extract sample ID from the 'O' record
+        String sampleIdRegex = "O\\|1\\|([^\\|^]*)";
+        Pattern sampleIdPattern = Pattern.compile(sampleIdRegex);
+        Matcher sampleIdMatcher = sampleIdPattern.matcher(astmMessage);
+        String sampleId = "";
+        if (sampleIdMatcher.find()) {
+            sampleId = sampleIdMatcher.group(1).trim(); // Extract the sample ID, remove any leading/trailing spaces
+        }
+
+        // Regex to find all 'R' records (result records)
+        String resultsRegex = "^R\\|.*$";
+        Pattern resultsPattern = Pattern.compile(resultsRegex, Pattern.MULTILINE);
+        Matcher resultsMatcher = resultsPattern.matcher(astmMessage);
+        ArrayList<String> resultRecords = new ArrayList<>();
+
+        while (resultsMatcher.find()) {
+            resultRecords.add(resultsMatcher.group()); // Add each result record to the list
+        }
+
+        // Output the extracted sample ID and result records
+        System.out.println("Sample ID: " + sampleId);
+        System.out.println("Result Records:");
+
+        DataBundle db = new DataBundle();
+        db.setMiddlewareSettings(SettingsLoader.getSettings());
+
+        PatientRecord patientRecord = new PatientRecord(0, sampleId, sampleId,
+                sampleId, sampleId, "", "", "", "Galle", "0715812399", "Niluka Gunasekara");
+
+        db.setPatientRecord(patientRecord);
+
+        for (String record : resultRecords) {
+            String testCode = ""; // Test code, e.g., TSH, FT4
+            String testResult = ""; // Numeric result of the test
+            String referenceRange = ""; // Reference range
+            String unit = ""; // Unit of measurement
+
+            // Parsing each record for details
+            String[] parts = record.split("\\|");
+            if (parts.length > 3) {
+                testCode = parts[2].split("\\^")[1]; // Assuming the code is the second part of the split by caret
+                testResult = parts[3]; // Result value
+                unit = parts[4]; // Unit
+                referenceRange = parts[5]; // Reference range
+            }
+
+            System.out.println("Test Code: " + testCode);
+            System.out.println("Result: " + testResult);
+            System.out.println("Unit: " + unit);
+            System.out.println("Reference Range: " + referenceRange);
+
+            QueryRecord qr = new QueryRecord(0, sampleId, sampleId, "");
+            db.getQueryRecords().add(qr);
+
+            ResultsRecord r1 = new ResultsRecord(1,
+                    testCode,
+                    testResult,
+                    unit,
+                    "",
+                    SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName(),
+                    sampleId);
+            db.getResultsRecords().add(r1);
+
+        }
+
+        LISCommunicator.pushResults(db);
     }
 
     private void handleResultMessageHL7(String hl7RawMessage) throws HL7Exception {
