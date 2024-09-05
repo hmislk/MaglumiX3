@@ -472,7 +472,7 @@ public class MaglumiX3Server {
             System.out.println("Unit: " + unit);
             System.out.println("Reference Range: " + referenceRange);
         }
-        //this is fine. It should work, can we run and see ok dr.
+        //this is fine. It should work, can we run and see
         LISCommunicator.pushResults(db);
     }
     
@@ -1164,20 +1164,39 @@ public class MaglumiX3Server {
 
         return false; // Return false if no result record is found
     }
+    
+    public boolean hasQueryRecord(String astmMessage) {
+        // Define a regular expression to match lines starting with 'Q', followed by a sequence number and '|'
+        // The regex considers potential whitespace at the start of the line
+        String regex = "^(\\s)*Q\\|[0-9]+\\|";
+        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE); // Enable multiline mode
+
+        // Use the pattern matcher to find matches across the whole message
+        if (pattern.matcher(astmMessage).find()) {
+            return true; // Return true if a query record is found
+        }
+
+        return false; // Return false if no query record is found
+    }
 
     private void processMessage(String data, Socket clientSocket) {
         System.out.println("processMessage");
         System.out.println("data = " + data);
 //        if (data.length() >= 3 && Character.isDigit(data.charAt(0)) && data.charAt(2) == '|') {
-        char recordType = data.charAt(1);
-
+        char recordType = data.charAt(0);//change the 1 -> 0 
+        
+        System.out.println("recordType index = " + recordType);
+        
         if (hasResultRecord(data)) {
+            System.out.println("has Result Record");
             boolean isAresultMessage = processResultMessage(data);
             if (isAresultMessage) {
                 handleResultMessage(data);
                 return;
             }
-        } else {
+        }else if(hasQueryRecord(data)){
+            
+        }else {
             return;
         }
 
