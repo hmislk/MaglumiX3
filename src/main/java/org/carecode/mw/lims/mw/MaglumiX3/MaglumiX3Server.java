@@ -1,6 +1,7 @@
 package org.carecode.mw.lims.mw.MaglumiX3;
 
 import ca.uhn.hl7v2.DefaultHapiContext;
+import ca.uhn.hl7v2.HL7Exception;
 import ca.uhn.hl7v2.HapiContext;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -23,15 +24,22 @@ import org.carecode.lims.libraries.QueryRecord;
 import org.carecode.lims.libraries.ResultsRecord;
 import ca.uhn.hl7v2.model.Message;
 import ca.uhn.hl7v2.model.Segment;
+import ca.uhn.hl7v2.model.v25.group.OUL_R22_ORDER;
+import ca.uhn.hl7v2.model.v25.group.OUL_R22_RESULT;
+import ca.uhn.hl7v2.model.v25.group.OUL_R22_SPECIMEN;
 import ca.uhn.hl7v2.parser.Parser;
 import ca.uhn.hl7v2.parser.PipeParser;
-import ca.uhn.hl7v2.model.v25.message.ORU_R01;
+import ca.uhn.hl7v2.model.v25.message.OUL_R22;
 import ca.uhn.hl7v2.model.v25.segment.MSH;
-import ca.uhn.hl7v2.model.v25.segment.PID;
+import ca.uhn.hl7v2.model.v25.segment.NTE;
 import ca.uhn.hl7v2.model.v25.segment.OBR;
 import ca.uhn.hl7v2.model.v25.segment.OBX;
-import java.util.ArrayList;
+import ca.uhn.hl7v2.model.v25.segment.ORC;
+import ca.uhn.hl7v2.model.v25.segment.SPM;
 import java.util.logging.Level;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.ArrayList;
 
 public class MaglumiX3Server {
 
@@ -85,79 +93,120 @@ public class MaglumiX3Server {
 
     private void handleClient(Socket clientSocket) {
         try (InputStream in = new BufferedInputStream(clientSocket.getInputStream()); OutputStream out = new BufferedOutputStream(clientSocket.getOutputStream())) {
+            StringBuilder asciiDebugInfo = new StringBuilder();
             boolean sessionActive = true;
-            StringBuilder messageBuilder = new StringBuilder();
+            boolean inChecksum = false;
+            int checksumCount = 0;
 
             while (sessionActive) {
-                System.out.println("Waiting for data...");
                 int data = in.read();
-                System.out.println("Data received: " + data + " (char: " + (char) data + ")");
 
-                if (data == -1) { // Client has closed the connection
-                    sessionActive = false;
+                if (inChecksum) {
+                    asciiDebugInfo.append((char) data).append(" (").append(data).append(") ");  // Append character and its ASCII value
+                    checksumCount++;
+                    if (checksumCount == 4) {
+                        inChecksum = false;
+                        checksumCount = 0;
+                        asciiDebugInfo.setLength(0);  // Clear the StringBuilder for the next use
+                    }
                     continue;
                 }
 
                 switch (data) {
-                    case ENQUIRY:
-                        System.out.println("Received ENQ");
-                        out.write(ACKNOWLEDGEMENT);
+                    case ENQ:
+                        logger.debug("Received ENQ");
+                        out.write(ACK);
                         out.flush();
-                        System.out.println("Sent ACK");
+                        logger.debug("Sent ACK");
                         break;
-                    case START_OF_TEXT:
-                        messageBuilder = new StringBuilder(); // Reset the StringBuilder for a new message
-                        System.out.println("Start of text detected");
+                    case ACK:
+                        logger.debug("ACK Received.");
+                        handleAck(clientSocket, out);
                         break;
-                    case END_OF_TEXT:
-                    case CARRIAGE_RETURN: // Handle CR as potential end of message
-                        String message = messageBuilder.toString();
-                        System.out.println("Complete HL7 message received: " + message);
-                        processHL7Messages(message);//this is important
-                        out.write(ACKNOWLEDGEMENT);
+                    case STX:
+                        inChecksum = true;
+                        StringBuilder message = new StringBuilder();
+                        asciiDebugInfo = new StringBuilder();  // To store ASCII values for debugging
+
+                        while ((data = in.read()) != ETX) {
+                            if (data == -1) {
+                                break;
+                            }
+                            message.append((char) data);
+                            asciiDebugInfo.append("[").append(data).append("] ");  // Append ASCII value in brackets
+                        }
+                        logger.debug("Message received: " + message);
+                        processMessage(message.toString(), clientSocket);
+                        out.write(ACK);
                         out.flush();
-                        System.out.println("Sent ACK after message processing");
+                        logger.debug("Sent ACK after STX-ETX block");
                         break;
-                    case END_OF_TRANSMISSION:
-                        System.out.println("EOT Received, closing connection");
-                        sessionActive = false; // End the session as EOT is received
+                    case EOT:
+                        logger.debug("EOT Received");
+                        handleEot(out);
                         break;
                     default:
-                        if (data != START_OF_TEXT && data != END_OF_TRANSMISSION) {
-                            messageBuilder.append((char) data); // Build the HL7 message
-                            System.out.println("Building message: " + messageBuilder);
+                        if (!inChecksum) {
+                            logger.debug("Received unexpected data: " + (char) data + " (ASCII: " + data + ")");
+                            asciiDebugInfo.append((char) data).append(" (").append(data).append(") ");
+                        } else {
+                            logger.debug("Data within checksum calculation: " + (char) data + " (ASCII: " + data + ")");
                         }
                         break;
                 }
             }
         } catch (IOException e) {
-            System.err.println("Error during communication with client: " + e.getMessage());
-            e.printStackTrace();
-        } finally {
-            try {
-                clientSocket.close();
-                System.out.println("Client socket closed");
-            } catch (IOException e) {
-                System.err.println("Error while closing the client socket: " + e.getMessage());
-                e.printStackTrace();
-            }
+            logger.error("Error during client communication", e);
         }
     }
 
-    // Process the individual HL7 messages received
-    
-    public void processHL7Messages(String combinedMessages) {
-        String[] individualMessages = splitHL7Messages(combinedMessages);
-        for (String message : individualMessages) {
-            if (!message.trim().isEmpty()) {
-                processIndividualHL7Message(message);
+    public void processHL7Messages(String message) {
+        // Create a HAPI Parser
+        Parser parser = new PipeParser();
+
+        try {
+            // Parse the message string into a Message object
+            Message hapiMsg = parser.parse(message);
+
+            // Check if the parsed message is an ORU_R01 (Observation Result)
+            if (hapiMsg instanceof OUL_R22_RESULT) {
+                // Handle the message as an ORU_R01 message
+                handleResultMessage((OUL_R22) hapiMsg);
+            } else {
+                System.out.println("Received message is not an ORU_R01.");
             }
+        } catch (HL7Exception e) {
+            System.out.println("Error parsing HL7 message: " + e.getMessage());
         }
+    }
+
+    public void handleResultMessage(OUL_R22 oru) {
+        System.out.println("oru = " + oru);
+        OUL_R22 oulMsg = (OUL_R22) oru;
+        OUL_R22_SPECIMEN oulSpe = oulMsg.getSPECIMEN();
+        SPM spm = oulSpe.getSPM();
+        String sampleId = spm.getSetIDSPM().getValue();
+
+        System.out.println("sampleId = " + sampleId);
+
+        System.out.println("Extracted Sample ID: " + sampleId);
+
     }
 
     // Split the combined string of HL7 messages into individual messages
     private String[] splitHL7Messages(String combinedMessages) {
         return combinedMessages.split("(?<=\\r)\\n");
+    }
+
+    private String cleanMessage(String message) {
+        // Remove non-printable characters and trim whitespace
+        message = message.replaceAll("[\\x00-\\x1F\\x7F]+", "");
+        // Ensure it starts with MSH
+        int mshIndex = message.indexOf("MSH");
+        if (mshIndex > 0) {
+            message = message.substring(mshIndex);
+        }
+        return message;
     }
 
     // Process each individual HL7 message and determine action based on message type
@@ -166,15 +215,17 @@ public class MaglumiX3Server {
         Parser parser = context.getPipeParser();
 
         try {
+//            message = cleanMessage(message);
+
             Message hl7Message = parser.parse(message);
             MSH msh = (MSH) hl7Message.get("MSH");
-            String messageType = msh.getMessageType().getMessageCode().getValue();
+            String messageType = msh.getMessageType().getMessageCode().getValue() + "^" + msh.getMessageType().getTriggerEvent().getValue();
 
             switch (messageType) {
                 case "OUL^R22":
-                    handleResultMessage(hl7Message);
+                    handleResultMessage("");
                     break;
-                case "QRY^R02":
+                case "QRY^Q01": // Example query message type
                     handleQueryMessage(hl7Message);
                     break;
                 default:
@@ -305,8 +356,9 @@ public class MaglumiX3Server {
             // Route based on type and event
             switch (messageType) {
                 case "OUL^R22":
-                    handleResultMessage(hl7Message);
+
                     break;
+                case "OUL":
                 // Add more cases as needed for other types
                 default:
                     logger.warn("Unhandled message type: " + messageType);
@@ -347,59 +399,373 @@ public class MaglumiX3Server {
         return records;
     }
 
-// Example handler method for result messages
-    private void handleResultMessage(Message hl7Message) {
-        ORU_R01 message = (ORU_R01) hl7Message;
-        DataBundle dataBundle = new DataBundle();
-        dataBundle.setMiddlewareSettings(SettingsLoader.getSettings());
+    
+    private void handleResultMessage(String astmMessage) {
+        System.out.println("ASTM Raw Message = " + astmMessage);
 
-        // Patient information
-        PID pid = message.getPATIENT_RESULT().getPATIENT().getPID();
-        String patientId = pid.getPatientIdentifierList(0).getIDNumber().getValue();
-        String additionalId = pid.getPatientIdentifierList(0).getIdentifierTypeCode().getValue();
-        String patientName = pid.getPatientName(0).getFamilyName().getSurname().getValue();
-        String patientSecondName = pid.getPatientName(0).getGivenName().getValue();
-        String patientSex = pid.getAdministrativeSex().getValue();
-        String race = pid.getRace(0).getIdentifier().getValue();
-        String dob = "";
-        String patientAddress = pid.getPatientAddress(0).getStreetAddress().getStreetOrMailingAddress().getValue();
-        String patientPhoneNumber = "";
-        String attendingDoctor = message.getPATIENT_RESULT().getPATIENT().getVISIT().getPV1().getAttendingDoctor(0).getFamilyName().getSurname().getValue();
-
-        PatientRecord pr = new PatientRecord(0,
-                patientId,
-                additionalId,
-                patientName,
-                patientSecondName,
-                patientSex,
-                race,
-                dob,
-                patientAddress,
-                patientPhoneNumber,
-                attendingDoctor);
-        dataBundle.setPatientRecord(pr);
-
-        // Iterate over all OBX segments within the first OBR segment
-        OBR obr = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBR();
-        int obxCount = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATIONReps();
-
-        for (int i = 0; i < obxCount; i++) {
-            OBX obx = message.getPATIENT_RESULT().getORDER_OBSERVATION().getOBSERVATION(i).getOBX();
-            String testCode = obx.getObservationIdentifier().getIdentifier().getValue();
-            String resultValueString = obx.getObservationValue(0).getData().toString();
-            String resultUnits = obx.getUnits().getIdentifier().getValue();
-            String resultDateTime = "";
-            String instrumentName = SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName();
-            String sampleId = obr.getFillerOrderNumber().getEntityIdentifier().getValue();
-
-            ResultsRecord rr = new ResultsRecord(testCode, resultValueString, resultUnits, resultDateTime, instrumentName, sampleId);
-
-            LISCommunicator.pushResults(patientDataBundle);
-
-            dataBundle.getResultsRecords().add(rr);
+        // Regex to extract sample ID from the 'O' record
+        String sampleIdRegex = "O\\|1\\|([^\\|^]*)";
+        Pattern sampleIdPattern = Pattern.compile(sampleIdRegex);
+        Matcher sampleIdMatcher = sampleIdPattern.matcher(astmMessage);
+        String sampleId = "";
+        if (sampleIdMatcher.find()) {
+            sampleId = sampleIdMatcher.group(1).trim(); // Extract the sample ID, remove any leading/trailing spaces
         }
 
-        logger.info("Handling Result Message: " + hl7Message.toString());
+        // Regex to find all 'R' records (result records)
+        String resultsRegex = "^R\\|.*$";
+        Pattern resultsPattern = Pattern.compile(resultsRegex, Pattern.MULTILINE);
+        Matcher resultsMatcher = resultsPattern.matcher(astmMessage);
+        ArrayList<String> resultRecords = new ArrayList<>();
+
+        while (resultsMatcher.find()) {
+            resultRecords.add(resultsMatcher.group()); // Add each result record to the list
+        }
+
+        // Output the extracted sample ID and result records
+        System.out.println("Sample ID: " + sampleId);
+        System.out.println("Result Records:");
+        
+        
+        DataBundle db = new DataBundle();
+        db.setMiddlewareSettings(SettingsLoader.getSettings());
+        
+        
+        PatientRecord patientRecord = new PatientRecord(0, sampleId, sampleId,
+                sampleId, sampleId, "", "", "", "Galle", "0715812399", "Niluka Gunasekara");
+
+        db.setPatientRecord(patientRecord);
+
+        for (String record : resultRecords) {
+            String testCode = ""; // Test code, e.g., TSH, FT4
+            String testResult = ""; // Numeric result of the test
+            String referenceRange = ""; // Reference range
+            String unit = ""; // Unit of measurement
+
+            // Parsing each record for details
+            String[] parts = record.split("\\|");
+            if (parts.length > 3) {
+                // Adjust this line based on the actual placement of the test code
+                String[] testDetails = parts[2].split("\\^");
+                if (testDetails.length > 1) {
+                    testCode = testDetails[testDetails.length - 1]; // Assuming the code is the last part after the last caret
+                }
+                testResult = parts[3]; // Result value
+                unit = parts[4]; // Unit
+                referenceRange = parts[5]; // Reference range
+
+                QueryRecord qr = new QueryRecord(0, sampleId, sampleId, "");
+                db.getQueryRecords().add(qr);
+
+                ResultsRecord r1 = new ResultsRecord(
+                        testCode,
+                        testResult,
+                        unit,
+                        "",
+                        SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName(),
+                        sampleId);
+                db.getResultsRecords().add(r1);
+
+            }
+            System.out.println("Test Code: " + testCode);
+            System.out.println("Result: " + testResult);
+            System.out.println("Unit: " + unit);
+            System.out.println("Reference Range: " + referenceRange);
+        }
+        //this is fine. It should work, can we run and see
+        LISCommunicator.pushResults(db);
+    }
+    
+    
+    private void handleResultMessage1(String astmMessage) {
+        System.out.println("ASTM Raw Message = " + astmMessage);
+
+        // Regex to extract sample ID from the 'O' record
+        String sampleIdRegex = "O\\|1\\|([^\\|^]*)";
+        Pattern sampleIdPattern = Pattern.compile(sampleIdRegex);
+        Matcher sampleIdMatcher = sampleIdPattern.matcher(astmMessage);
+        String sampleId = "";
+        if (sampleIdMatcher.find()) {
+            sampleId = sampleIdMatcher.group(1).trim(); // Extract the sample ID, remove any leading/trailing spaces
+        }
+
+        // Regex to find all 'R' records (result records)
+        String resultsRegex = "^R\\|.*$";
+        Pattern resultsPattern = Pattern.compile(resultsRegex, Pattern.MULTILINE);
+        Matcher resultsMatcher = resultsPattern.matcher(astmMessage);
+        ArrayList<String> resultRecords = new ArrayList<>();
+
+        while (resultsMatcher.find()) {
+            resultRecords.add(resultsMatcher.group()); // Add each result record to the list
+        }
+
+        // Output the extracted sample ID and result records
+        System.out.println("Sample ID: " + sampleId);
+        System.out.println("Result Records:");
+
+        DataBundle db = new DataBundle();
+        db.setMiddlewareSettings(SettingsLoader.getSettings());
+
+        PatientRecord patientRecord = new PatientRecord(0, sampleId, sampleId,
+                sampleId, sampleId, "", "", "", "Galle", "0715812399", "Niluka Gunasekara");
+
+        db.setPatientRecord(patientRecord);
+
+        for (String record : resultRecords) {
+            String testCode = ""; // Test code, e.g., TSH, FT4
+            String testResult = ""; // Numeric result of the test
+            String referenceRange = ""; // Reference range
+            String unit = ""; // Unit of measurement
+
+            // Parsing each record for details
+            String[] parts = record.split("\\|");
+            if (parts.length > 3) {
+                // Adjust this line based on the actual placement of the test code
+                String[] testDetails = parts[2].split("\\^");
+                if (testDetails.length > 1) {
+                    testCode = testDetails[testDetails.length - 1]; // Assuming the code is the last part after the last caret
+                }
+                testResult = parts[3]; // Result value
+                unit = parts[4]; // Unit
+                referenceRange = parts[5]; // Reference range
+
+                QueryRecord qr = new QueryRecord(0, sampleId, sampleId, "");
+                db.getQueryRecords().add(qr);
+
+                ResultsRecord r1 = new ResultsRecord(
+                        testCode,
+                        testResult,
+                        unit,
+                        "",
+                        SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName(),
+                        sampleId);
+                db.getResultsRecords().add(r1);
+
+            }
+
+            System.out.println("Test Code: " + testCode);
+            System.out.println("Result: " + testResult);
+            System.out.println("Unit: " + unit);
+            System.out.println("Reference Range: " + referenceRange);
+        }
+        
+         LISCommunicator.pushResults(db);
+    }
+
+    private void handleResultMessageOld(String astmMessage) {
+        System.out.println("ASTM Raw Message = " + astmMessage);
+
+        // Regex to extract sample ID from the 'O' record
+        String sampleIdRegex = "O\\|1\\|([^\\|^]*)";
+        Pattern sampleIdPattern = Pattern.compile(sampleIdRegex);
+        Matcher sampleIdMatcher = sampleIdPattern.matcher(astmMessage);
+        String sampleId = "";
+        if (sampleIdMatcher.find()) {
+            sampleId = sampleIdMatcher.group(1).trim(); // Extract the sample ID, remove any leading/trailing spaces
+        }
+
+        // Regex to find all 'R' records (result records)
+        String resultsRegex = "^R\\|.*$";
+        Pattern resultsPattern = Pattern.compile(resultsRegex, Pattern.MULTILINE);
+        Matcher resultsMatcher = resultsPattern.matcher(astmMessage);
+        ArrayList<String> resultRecords = new ArrayList<>();
+
+        while (resultsMatcher.find()) {
+            resultRecords.add(resultsMatcher.group()); // Add each result record to the list
+        }
+
+        // Output the extracted sample ID and result records
+        System.out.println("Sample ID: " + sampleId);
+        System.out.println("Result Records:");
+
+        DataBundle db = new DataBundle();
+        db.setMiddlewareSettings(SettingsLoader.getSettings());
+
+        PatientRecord patientRecord = new PatientRecord(0, sampleId, sampleId,
+                sampleId, sampleId, "", "", "", "Galle", "0715812399", "Niluka Gunasekara");
+
+        db.setPatientRecord(patientRecord);
+
+        for (String record : resultRecords) {
+            String testCode = ""; // Test code, e.g., TSH, FT4
+            String testResult = ""; // Numeric result of the test
+            String referenceRange = ""; // Reference range
+            String unit = ""; // Unit of measurement
+
+            // Parsing each record for details
+            String[] parts = record.split("\\|");
+            if (parts.length > 3) {
+                testCode = parts[2].split("\\^")[1]; // Assuming the code is the second part of the split by caret
+                testResult = parts[3]; // Result value
+                unit = parts[4]; // Unit
+                referenceRange = parts[5]; // Reference range
+            }
+
+            System.out.println("Test Code: " + testCode);
+            System.out.println("Result: " + testResult);
+            System.out.println("Unit: " + unit);
+            System.out.println("Reference Range: " + referenceRange);
+
+            QueryRecord qr = new QueryRecord(0, sampleId, sampleId, "");
+            db.getQueryRecords().add(qr);
+
+            ResultsRecord r1 = new ResultsRecord(1,
+                    testCode,
+                    testResult,
+                    unit,
+                    "",
+                    SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName(),
+                    sampleId);
+            db.getResultsRecords().add(r1);
+
+        }
+
+        LISCommunicator.pushResults(db);
+    }
+
+    private void handleResultMessageHL7(String hl7RawMessage) throws HL7Exception {
+        logger.debug("Starting to process raw HL7 message.");
+
+        // Clean the HL7 message
+        String cleanedMessage = cleanMessage(hl7RawMessage);
+        logger.debug("Cleaned HL7 message: " + cleanedMessage);
+
+        // Parse the cleaned message
+        PipeParser pipeParser = new PipeParser();
+        Message hl7Message;
+        try {
+            hl7Message = pipeParser.parse(cleanedMessage);
+        } catch (HL7Exception e) {
+            logger.error("Failed to parse HL7 message", e);
+            return;
+        }
+
+        // Ensure the message is of type OUL_R22
+        if (!(hl7Message instanceof OUL_R22)) {
+            logger.error("Message is not an instance of OUL_R22");
+            return;
+        }
+
+        logger.debug("Message is an instance of OUL_R22.");
+        OUL_R22 message = (OUL_R22) hl7Message;
+
+        // Iterate through all SPECIMEN groups to extract the Sample ID
+        for (int i = 0; i < message.getSPECIMENReps(); i++) {
+            logger.debug("Processing SPECIMEN group #" + i);
+            String sampleId = "";
+            OUL_R22_SPECIMEN specimenGroup = message.getSPECIMEN(i);
+            if (specimenGroup != null) {
+                SPM spm = specimenGroup.getSPM();
+                if (spm != null) {
+                    // Log entire SPM segment for debugging
+                    logger.debug("SPM Segment: " + spm.encode());
+
+                    if (spm.getSpecimenID() != null && spm.getSpecimenID().getPlacerAssignedIdentifier() != null) {
+                        sampleId = spm.getSpecimenID().getPlacerAssignedIdentifier().getEntityIdentifier().getValue();
+                        logger.info("Sample ID: " + sampleId);
+                    } else {
+                        logger.warn("SpecimenID or PlacerAssignedIdentifier is null in SPM segment.");
+                    }
+                } else {
+                    logger.warn("SPM segment is null in SPECIMEN group #" + i);
+                }
+
+                // Iterate through ORDER groups within the SPECIMEN group
+                for (int j = 0; j < specimenGroup.getORDERReps(); j++) {
+                    logger.debug("Processing ORDER group #" + j);
+                    OUL_R22_ORDER orderGroup = specimenGroup.getORDER(j);
+                    if (orderGroup != null) {
+                        // Extract OBR segment details
+                        OBR obr = orderGroup.getOBR();
+                        if (obr != null) {
+                            logger.debug("OBR Segment: " + obr.encode());
+                            String obrDetails = obr.getUniversalServiceIdentifier().getText().getValue();
+                            logger.info("OBR Details: " + obrDetails);
+                        } else {
+                            logger.warn("OBR segment is null in ORDER group #" + j);
+                        }
+
+                        // Extract ORC segment details
+                        ORC orc = orderGroup.getORC();
+                        if (orc != null) {
+                            logger.debug("ORC Segment: " + orc.encode());
+                            String orcDetails = orc.getOrderControl().getValue();
+                            logger.info("ORC Details: " + orcDetails);
+                        } else {
+                            logger.warn("ORC segment is null in ORDER group #" + j);
+                        }
+
+                        // Process NTE segments if available
+                        for (int k = 0; k < orderGroup.getNTEReps(); k++) {
+                            logger.debug("Processing NTE segment #" + k);
+                            NTE nte = orderGroup.getNTE(k);
+                            if (nte != null) {
+                                logger.debug("NTE Segment: " + nte.encode());
+                                String nteComment = nte.getComment(0).getValue();
+                                logger.info("NTE Comment: " + nteComment);
+                            } else {
+                                logger.warn("NTE segment is null in ORDER group #" + j + ", NTE #" + k);
+                            }
+                        }
+
+                        // Process RESULT groups if available
+                        for (int k = 0; k < orderGroup.getRESULTReps(); k++) {
+                            logger.debug("Processing RESULT group #" + k);
+                            OUL_R22_RESULT resultGroup = orderGroup.getRESULT(k);
+                            if (resultGroup != null) {
+                                OBX obx = resultGroup.getOBX();
+                                if (obx != null) {
+                                    logger.debug("OBX Segment: " + obx.encode());
+                                    String testCode = obx.getObservationIdentifier().getIdentifier().getValue();
+                                    String resultValueString = obx.getObservationValue(0).getData().toString();
+                                    String resultUnits = obx.getUnits().getIdentifier().getValue();
+                                    String resultDateTime = obx.getDateTimeOfTheObservation().getTime().getValue();
+
+                                    logger.info("Test Code: " + testCode);
+                                    logger.info("Result Value: " + resultValueString);
+                                    logger.info("Result Units: " + resultUnits);
+                                    logger.info("Result DateTime: " + resultDateTime);
+
+                                    DataBundle db = new DataBundle();
+                                    db.setMiddlewareSettings(SettingsLoader.getSettings());
+
+                                    PatientRecord patientRecord = new PatientRecord(0, sampleId, sampleId,
+                                            sampleId, sampleId, "", "", "", "Galle", "0715812399", "Niluka Gunasekara");
+
+                                    db.setPatientRecord(patientRecord);
+
+                                    ResultsRecord r1 = new ResultsRecord(1, testCode, resultValueString, resultUnits, resultDateTime,
+                                            SettingsLoader.getSettings().getAnalyzerDetails().getAnalyzerName(),
+                                            sampleId);
+                                    db.getResultsRecords().add(r1);
+
+                                    QueryRecord qr = new QueryRecord(0, sampleId, sampleId, "");
+                                    db.getQueryRecords().add(qr);
+
+                                    LISCommunicator.pushResults(db);
+                                } else {
+                                    logger.warn("OBX segment is null in RESULT group #" + k);
+                                }
+                            } else {
+                                logger.warn("RESULT group is null in ORDER group #" + j);
+                            }
+                        }
+
+                    } else {
+                        logger.warn("ORDER group is null in SPECIMEN group #" + i);
+                    }
+                }
+            } else {
+                logger.warn("SPECIMEN group is null at index #" + i);
+            }
+        }
+        logger.info("Processed OUL_R22 message.");
+    }
+
+// This method can be created to further process or store the assembled data bundle
+    private void processCompleteDataBundle(DataBundle dataBundle) {
+        // Logic to process or store the data bundle
+        logger.info("Processed Data Bundle for patient ID: " + dataBundle.getPatientRecord().getPatientId());
     }
 
     public void start(int port) {
@@ -785,75 +1151,119 @@ public class MaglumiX3Server {
         return terminationStart + terminationInfo;
     }
 
+    public boolean hasResultRecord(String astmMessage) {
+        // Define a regular expression to match lines starting with 'R', followed by frame number and '|'
+        // We use the pattern to ensure it can handle various line terminations and any preceding whitespace
+        String regex = "^(\\s)*R\\|[0-9]+\\|";
+        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE); // Enable multiline mode
+
+        // Use the pattern matcher to find matches across the whole message
+        if (pattern.matcher(astmMessage).find()) {
+            return true; // Return true if a result record is found
+        }
+
+        return false; // Return false if no result record is found
+    }
+    
+    public boolean hasQueryRecord(String astmMessage) {
+        // Define a regular expression to match lines starting with 'Q', followed by a sequence number and '|'
+        // The regex considers potential whitespace at the start of the line
+        String regex = "^(\\s)*Q\\|[0-9]+\\|";
+        Pattern pattern = Pattern.compile(regex, Pattern.MULTILINE); // Enable multiline mode
+
+        // Use the pattern matcher to find matches across the whole message
+        if (pattern.matcher(astmMessage).find()) {
+            return true; // Return true if a query record is found
+        }
+
+        return false; // Return false if no query record is found
+    }
+
     private void processMessage(String data, Socket clientSocket) {
+        System.out.println("processMessage");
+        System.out.println("data = " + data);
+//        if (data.length() >= 3 && Character.isDigit(data.charAt(0)) && data.charAt(2) == '|') {
+        char recordType = data.charAt(0);//change the 1 -> 0 
+        
+        System.out.println("recordType index = " + recordType);
+        
+        if (hasResultRecord(data)) {
+            System.out.println("has Result Record");
+            boolean isAresultMessage = processResultMessage(data);
+            if (isAresultMessage) {
+                handleResultMessage(data);
+                return;
+            }
+        }else if(hasQueryRecord(data)){
+            
+        }else {
+            return;
+        }
 
-        if (data.length() >= 3 && Character.isDigit(data.charAt(0)) && data.charAt(2) == '|') {
-            char recordType = data.charAt(1);
+        switch (recordType) {
+            case 'H': // Header Record
+                patientDataBundle = new DataBundle();
+                receivingQuery = false;
+                receivingResults = false;
+                respondingQuery = false;
+                respondingResults = false;
+                needToSendEotForRecordForQuery = false;
+                needToSendOrderingRecordForQuery = false;
+                needToSendPatientRecordForQuery = false;
+                needToSendHeaderRecordForQuery = false;
+                logger.debug("Header Record Received: " + data);
+                break;
+            case 'R': // Result Record
+                logger.debug("Result Record Received: " + data);
+                respondingResults = true;
+                respondingQuery = false;
+                resultRecord = parseResultsRecord(data);
+                getPatientDataBundle().getResultsRecords().add(resultRecord);
+                logger.debug("Result Record Parsed: " + resultRecord);
+                break;
+            case 'Q': // Query Record
+                System.out.println("Query result received" + data);
+                receivingQuery = false;
 
-            switch (recordType) {
-                case 'H': // Header Record
-                    patientDataBundle = new DataBundle();
-                    receivingQuery = false;
-                    receivingResults = false;
-                    respondingQuery = false;
-                    respondingResults = false;
-                    needToSendEotForRecordForQuery = false;
-                    needToSendOrderingRecordForQuery = false;
-                    needToSendPatientRecordForQuery = false;
-                    needToSendHeaderRecordForQuery = false;
-                    logger.debug("Header Record Received: " + data);
-                    break;
-                case 'R': // Result Record
-                    logger.debug("Result Record Received: " + data);
-                    respondingResults = true;
-                    respondingQuery = false;
-                    resultRecord = parseResultsRecord(data);
-                    getPatientDataBundle().getResultsRecords().add(resultRecord);
-                    logger.debug("Result Record Parsed: " + resultRecord);
-                    break;
-                case 'Q': // Query Record
-                    System.out.println("Query result received" + data);
-                    receivingQuery = false;
+                respondingQuery = true;
+                needToSendHeaderRecordForQuery = true;
+                logger.debug("Query Record Received: " + data);
+                queryRecord = parseQueryRecord(data);
+                getPatientDataBundle().getQueryRecords().add(queryRecord);
+                logger.debug("Parsed the Query Record: " + queryRecord);
+                break;
+            case 'P': // Patient Record
+                logger.debug("Patient Record Received: " + data);
+                patientRecord = parsePatientRecord(data);
+                getPatientDataBundle().setPatientRecord(patientRecord);
+                logger.debug("Patient Record Parsed: " + patientRecord);
+                break;
+            case 'L': // Termination Record
+                logger.debug("Termination Record Received: " + data);
+                break;
+            case 'C': // Comment Record
+                logger.debug("Comment Record Received: " + data);
 
-                    respondingQuery = true;
-                    needToSendHeaderRecordForQuery = true;
-                    logger.debug("Query Record Received: " + data);
-                    queryRecord = parseQueryRecord(data);
-                    getPatientDataBundle().getQueryRecords().add(queryRecord);
-                    logger.debug("Parsed the Query Record: " + queryRecord);
-                    break;
-                case 'P': // Patient Record
-                    logger.debug("Patient Record Received: " + data);
-                    patientRecord = parsePatientRecord(data);
-                    getPatientDataBundle().setPatientRecord(patientRecord);
-                    logger.debug("Patient Record Parsed: " + patientRecord);
-                    break;
-                case 'L': // Termination Record
-                    logger.debug("Termination Record Received: " + data);
-                    break;
-                case 'C': // Comment Record
-                    logger.debug("Comment Record Received: " + data);
-
-                    break;
-                case 'O': // Order Record or other type represented by 'O'
-                    System.out.println("Order result received" + data);
-                    logger.debug("Query Record Received: " + data);
-                    String tmpSampleId = extractSampleIdFromOrderRecord(data);
-                    System.out.println("tmpSampleId = " + tmpSampleId);
-                    sampleId = tmpSampleId;
-                    QueryRecord qr = new QueryRecord(0, sampleId, sampleId, "");
-                    getPatientDataBundle().getQueryRecords().add(qr);
+                break;
+            case 'O': // Order Record or other type represented by 'O'
+                System.out.println("Order result received" + data);
+                logger.debug("Query Record Received: " + data);
+                String tmpSampleId = extractSampleIdFromOrderRecord(data);
+                System.out.println("tmpSampleId = " + tmpSampleId);
+                sampleId = tmpSampleId;
+                QueryRecord qr = new QueryRecord(0, sampleId, sampleId, "");
+                getPatientDataBundle().getQueryRecords().add(qr);
 //                    OrderRecord orderRecord = new OrderRecord(2, sampleId, null, sampleId, "", "");
 //                    getPatientDataBundle().getOrderRecords().add(orderRecord);
-                    logger.debug("Parsed the Query Record: " + queryRecord);
-                    break;
-                default: // Unknown Record
-                    logger.debug("Unknown Record Received: " + data);
-                    break;
-            }
-        } else {
-            logger.debug("Invalid Record Structure: " + data);
+                logger.debug("Parsed the Query Record: " + queryRecord);
+                break;
+            default: // Unknown Record
+                logger.debug("Unknown Record Received: " + data);
+                break;
         }
+//        } else {
+//            logger.debug("Invalid Record Structure: " + data);
+//        }
     }
 
     public static PatientRecord parsePatientRecord(String patientSegment) {
@@ -925,6 +1335,7 @@ public class MaglumiX3Server {
                 instrumentName,
                 sampleId
         );
+
     }
 
     public static OrderRecord parseOrderRecord(String orderSegment) {
@@ -1026,6 +1437,11 @@ public class MaglumiX3Server {
 
     public void setPatientDataBundle(DataBundle patientDataBundle) {
         this.patientDataBundle = patientDataBundle;
+    }
+
+    private boolean processResultMessage(String data) {
+        System.out.println("data = " + data);
+        return true;
     }
 
 }

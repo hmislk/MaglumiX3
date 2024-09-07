@@ -116,42 +116,51 @@ public class LISCommunicator {
             System.out.println("responseCode = " + responseCode);
             if (responseCode == HttpURLConnection.HTTP_OK) {
                 System.out.println("ok");
-                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
-                StringBuilder response = new StringBuilder();
-                String inputLine;
-
-                while ((inputLine = in.readLine()) != null) {
-                    response.append(inputLine);
-                }
-                in.close();
-
-                System.out.println("response.toString() = " + response.toString());
-
-                // Optionally process the server response (if needed)
-                JsonObject responseObject = JsonParser.parseString(response.toString()).getAsJsonObject();
-                MaglumiX3.logger.info("Response from server: " + responseObject.toString());
-
-// Extract status
-                String status = responseObject.get("status").getAsString();
-                MaglumiX3.logger.info("Status: " + status);
-
-// Extract the list of ResultsRecord objects
-                Gson gson = new Gson();
-                JsonArray detailsArray = responseObject.getAsJsonArray("details");
-
-// Deserialize the JSON array into a list of ResultsRecord objects
-                List<ResultsRecord> resultsRecords = new ArrayList<>();
-                for (JsonElement element : detailsArray) {
-                    ResultsRecord record = gson.fromJson(element, ResultsRecord.class);
-                    resultsRecords.add(record);
-                }
-
-// Log and process the ResultsRecord objects as needed
-                for (ResultsRecord record : resultsRecords) {
-                    MaglumiX3.logger.info("Sample ID: " + record.getSampleId()
-                            + ", Test: " + record.getTestCode()
-                            + ", Status: " + record.getStatus());
-                }
+//                BufferedReader in = new BufferedReader(new InputStreamReader(conn.getInputStream(), "utf-8"));
+//                StringBuilder response = new StringBuilder();
+//                String inputLine;
+//
+//                while ((inputLine = in.readLine()) != null) {
+//                    response.append(inputLine);
+//                }
+//                in.close();
+//
+//                System.out.println("response.toString() = " + response.toString());
+//
+//                // Optionally process the server response (if needed)
+//                JsonObject responseObject = JsonParser.parseString(response.toString()).getAsJsonObject();
+//                MaglumiX3.logger.info("Response from server: " + responseObject.toString());
+//
+//// Extract status
+//                String status = responseObject.get("status").getAsString();
+//                MaglumiX3.logger.info("Status: " + status);
+//                
+//                
+//                
+//                if(responseObject.get("details") == null){
+//                    System.out.println("Response Object Details is null");
+//                }
+//                
+//// Extract the list of ResultsRecord objects
+//                Gson gson = new Gson();
+//                JsonArray detailsArray = responseObject.getAsJsonArray("details");
+//                
+//                if(detailsArray == null){
+//                    System.out.println("Details Array is Null");
+//                }
+//// Deserialize the JSON array into a list of ResultsRecord objects
+//                List<ResultsRecord> resultsRecords = new ArrayList<>();
+//                for (JsonElement element : detailsArray) {
+//                    ResultsRecord record = gson.fromJson(element, ResultsRecord.class);
+//                    resultsRecords.add(record);
+//                }
+//
+//// Log and process the ResultsRecord objects as needed
+//                for (ResultsRecord record : resultsRecords) {
+//                    MaglumiX3.logger.info("Sample ID: " + record.getSampleId()
+//                            + ", Test: " + record.getTestCode()
+//                            + ", Status: " + record.getStatus());
+//                }
 
             } else {
                 System.out.println("POST request failed. Response code: " + responseCode);

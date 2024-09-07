@@ -1,8 +1,8 @@
 {
     "analyzerDetails": {
-        "analyzerName": "MaglumiX3",
-        "serialNumber": "0002",
-        "analyzerId": "223",
+        "analyzerName": "MaglumiX3HL7",
+        "serialNumber": "MaglumiX301",
+        "analyzerId": "219",
         "analyzerIP": "192.168.203.200",
         "analyzerPort": 5500,
         "communicationType": "TCP/IP",
@@ -14,11 +14,11 @@
         "sampleIdSendingDelay": "0",
         "resultSendingDelay": "0",
         "qcResultSendingInUse": "Yes",
-        "departmentAnalyzerId": "193728",
+        "departmentAnalyzerId": "224334",
         "departmentId": "9039"
     },
     "limsSettings": {
-        "limsServerBaseUrl": "http://124.43.4.189:8010/ruhunu/api/middleware",
+        "limsServerBaseUrl": "https://rh.carecode.org/rh/api/middleware",
         "username": "buddhika",
         "password": "Buddhika123@"
     }
